@@ -1,65 +1,111 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { detectPlatform } from "@/lib/platform";
+
+export default function HomePage() {
+  const router = useRouter();
+  const [appId, setAppId] = useState("");
+
+  const detectedPlatform = useMemo(() => {
+    if (!appId.trim()) {
+      return null;
+    }
+    return detectPlatform(appId.trim());
+  }, [appId]);
+
+  const isValid = detectedPlatform !== null && appId.trim().length > 0;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid) {
+      return;
+    }
+    router.push(`/link?id=${encodeURIComponent(appId.trim())}`);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col">
+      {/* Header */}
+      <header className="flex items-center justify-between p-6 border-b border-gray-200">
+        <h1 className="text-2xl font-semibold text-gray-800">RightFront</h1>
+        <nav>
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="https://twitter.com"
+            className="text-gray-600 hover:text-gray-900 mr-4"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            Twitter
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="https://github.com"
+            className="text-gray-600 hover:text-gray-900"
           >
-            Documentation
+            GitHub
           </a>
-        </div>
-      </main>
-    </div>
+        </nav>
+      </header>
+
+      {/* Hero */}
+      <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
+        <h2 className="text-5xl font-bold mb-4 text-gray-800">
+          Smart App Store Links. <br /> Every Time, in the Right Front.
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mb-8">
+          RightFront automatically redirects your users to the correct App or
+          Play Store page based on their country. No more broken Apple “Not
+          Found” pages.
+        </p>
+
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white shadow-md rounded-lg px-6 py-4 w-full max-w-md border border-gray-100"
+        >
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-sm text-gray-700 text-left">
+              App ID
+            </label>
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded ${
+                detectedPlatform === "ios"
+                  ? "bg-blue-100 text-blue-700"
+                  : detectedPlatform === "android"
+                  ? "bg-green-100 text-green-700"
+                  : "invisible"
+              }`}
+            >
+              {detectedPlatform === "ios" ? "iOS" : "Android"}
+            </span>
+          </div>
+          <input
+            type="text"
+            value={appId}
+            onChange={(e) => setAppId(e.target.value.trim())}
+            placeholder="e.g., id324684580 or com.spotify.music"
+            className="w-full border rounded-md p-2 mb-6 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+
+          <button
+            type="submit"
+            disabled={!isValid}
+            className={`w-full text-white font-semibold py-2 rounded-md transition-colors ${
+              isValid
+                ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Create Smart Link
+          </button>
+        </form>
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-6 border-t border-gray-100 text-sm text-gray-500">
+        © {new Date().getFullYear()} RightFront — Built for indie devs &
+        marketers.
+      </footer>
+    </main>
   );
 }

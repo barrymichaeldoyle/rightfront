@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RightFront
 
-## Getting Started
+RightFront is a micro‑SaaS that provides **smart app store link redirection** for developers and marketing teams.
 
-First, run the development server:
+Users get a short link that automatically redirects visitors to the correct App Store or Play Store page **based on their location**.  
+If the app is unavailable in a country, RightFront shows a friendly fallback page instead of Apple's default “Not Available” page.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🧱 Tech Stack
+
+- **Framework:** Next.js (with the `app/` router)
+- **Language:** TypeScript
+- **Runtime:** Edge (on Vercel or similar)
+- **Styling:** Tailwind CSS
+- **Geo Detection:** Vercel `request.geo` or `ipapi.co` API fallback
+
+---
+
+## 🗂️ Project Structure
+
+```
+src/
+  app/
+    link/route.ts       # Redirect handler
+    fallback/page.tsx   # Fallback page
+  lib/
+    geo.ts              # Extract user country
+    resolve.ts          # Check store link availability
+  components/           # Reusable UI
+  middleware.ts         # Optional request preprocessing
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Core Flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. User visits `/link?id=<appId>&store=ios`.
+2. RightFront detects user's country.
+3. Checks the corresponding App Store page.
+4. Redirects if found; otherwise shows `/fallback`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📈 Future Plans
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Add analytics tracking for link clicks.
+- Support custom vanity links (`/r/myapp`).
+- Add dashboard with link management.
