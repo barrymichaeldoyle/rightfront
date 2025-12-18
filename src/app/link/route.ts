@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getCountryCode } from "@/lib/geo";
 import { detectPlatform } from "@/lib/platform";
 import { resolveAppUrl } from "@/lib/resolve";
+import { config } from "@/lib/config";
 
 export const runtime = "edge"; // optional (for faster geo detection)
 
@@ -29,7 +30,12 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const fallbackUrl = `${req.nextUrl.origin}/fallback?id=${appId}&country=${country}`;
+  const fallbackUrl = `${req.nextUrl.origin}${config.fallbackUrlBase}?id=${appId}&country=${country}`;
+
+  if (config.enableDebugLogs) {
+    console.log("Fallback URL:", fallbackUrl);
+  }
+
   return new Response(null, {
     status: 302,
     headers: {

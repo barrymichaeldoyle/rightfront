@@ -1,4 +1,4 @@
-import { DEFAULT_COUNTRY } from "./constants";
+import { config } from "./config";
 
 interface RequestWithGeo extends Request {
   geo?: {
@@ -20,7 +20,7 @@ export async function getCountryCode(req: Request): Promise<string> {
 
   // Localhost / no IP case
   if (!ip || ip.startsWith("127.") || ip === "localhost") {
-    return DEFAULT_COUNTRY;
+    return config.defaultCountry;
   }
 
   try {
@@ -29,12 +29,12 @@ export async function getCountryCode(req: Request): Promise<string> {
 
     // If the API responds with clear rate-limit or JSON, ignore and default
     if (!/^[A-Z]{2}$/i.test(text.trim())) {
-      return DEFAULT_COUNTRY;
+      return config.defaultCountry;
     }
 
     return text.trim().toLowerCase();
   } catch {
     // 3. Fall back cleanly
-    return DEFAULT_COUNTRY;
+    return config.defaultCountry;
   }
 }

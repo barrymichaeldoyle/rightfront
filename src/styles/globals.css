@@ -1,26 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  /* ====== Brand Colors ====== */
-  --color-primary: #2563eb;
-  --color-primary-foreground: white;
-  --color-bg: white;
-  --color-text: #111827;
-
-  /* ====== Fonts ====== */
+  /* === Dark-Only Theme Variables === */
+  --color-bg: #0b0f17;
+  --color-surface: #111827;
+  --color-text: #e5e7eb;
+  --color-text-muted: #9ca3af;
+  --color-primary: #3b82f6; /* RightFront blue */
+  --color-primary-glow: #60a5fa;
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
-/* ====== Base Layer Overrides ====== */
 @layer base {
+  html,
   body {
-    @apply bg-[--color-bg] text-[--color-text] font-sans;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    @apply font-semibold text-gray-900;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    min-height: 100%;
   }
 }
