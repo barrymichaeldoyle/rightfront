@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+
 import { detectPlatform } from "@/lib/platform";
 
 export default function FallbackPage() {
@@ -10,9 +11,9 @@ export default function FallbackPage() {
 
   if (!id) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-screen text-center p-6">
-        <h1 className="text-3xl font-semibold mb-4">Invalid Link</h1>
-        <p className="text-gray-600 mb-6 max-w-lg">Missing app ID.</p>
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+        <h1 className="mb-4 text-3xl font-semibold">Invalid Link</h1>
+        <p className="mb-6 max-w-lg text-gray-600">Missing app ID.</p>
       </main>
     );
   }
@@ -21,9 +22,9 @@ export default function FallbackPage() {
 
   if (!store) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-screen text-center p-6">
-        <h1 className="text-3xl font-semibold mb-4">Invalid App ID</h1>
-        <p className="text-gray-600 mb-6 max-w-lg">
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+        <h1 className="mb-4 text-3xl font-semibold">Invalid App ID</h1>
+        <p className="mb-6 max-w-lg text-gray-600">
           The app ID format is not recognized. Please use a valid iOS App Store
           ID (e.g., id284882215) or Android package name (e.g.,
           com.spotify.music).
@@ -39,9 +40,9 @@ export default function FallbackPage() {
       : `https://play.google.com/store/apps/details?id=${id}`;
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen text-center p-6">
-      <h1 className="text-3xl font-semibold mb-4">App Not Available</h1>
-      <p className="text-gray-600 mb-6 max-w-lg">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+      <h1 className="mb-4 text-3xl font-semibold">App Not Available</h1>
+      <p className="mb-6 max-w-lg text-gray-600">
         Sorry, this {storeName} app (ID: {id}) isn&apos;t available in your
         region ({country?.toUpperCase() || "Unknown"}).
       </p>

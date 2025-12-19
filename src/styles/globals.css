@@ -1,22 +1,8 @@
 @import "tailwindcss";
 
-@theme {
-  /* === Dark-Only Theme Variables === */
-  --color-bg: #0b0f17;
-  --color-surface: #111827;
-  --color-text: #e5e7eb;
-  --color-text-muted: #9ca3af;
-  --color-primary: #3b82f6; /* RightFront blue */
-  --color-primary-glow: #60a5fa;
-  --font-sans: "Inter", system-ui, sans-serif;
-}
-
 @layer base {
   html,
   body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-sans);
     min-height: 100%;
   }
 }

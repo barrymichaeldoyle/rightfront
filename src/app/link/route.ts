@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
+
+import { config } from "@/lib/config";
 import { getCountryCode } from "@/lib/geo";
 import { detectPlatform } from "@/lib/platform";
 import { resolveAppUrl } from "@/lib/resolve";
-import { config } from "@/lib/config";
 
 export const runtime = "edge"; // optional (for faster geo detection)
 
