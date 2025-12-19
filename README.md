@@ -42,6 +42,14 @@ src/
 
 ---
 
+## 🤖 Crawling & Indexing (pre-beta)
+
+- Sitemap + robots are generated automatically on build via `next-sitemap`.
+- Set **`NEXT_PUBLIC_SITE_URL`** (recommended) or **`SITE_URL`** in your deployment environment so generated URLs are correct.
+- The `/link` redirect route sends `X-Robots-Tag: noindex` to avoid being indexed (prevents duplicate crawl).
+
+---
+
 ## 📈 Future Plans
 
 - Add analytics tracking for link clicks.

@@ -15,8 +15,10 @@ export async function getCountryCode(req: Request): Promise<string> {
   }
 
   // 2. Try IP-based service (for local dev)
+  const forwardedFor = req.headers.get("x-forwarded-for");
   const ip =
-    req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || "";
+    req.headers.get("x-real-ip") ||
+    (forwardedFor ? forwardedFor.split(",")[0].trim() : "");
 
   // Localhost / no IP case
   if (!ip || ip.startsWith("127.") || ip === "localhost") {

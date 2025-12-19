@@ -1,6 +1,7 @@
+import { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import "@/styles/globals.css";
 
@@ -15,24 +16,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/favicon.svg",
+  },
   metadataBase: new URL("https://rightfront.app"),
   title: {
-    default: "RightFront — Right Storefront Links",
-    template: "%s — RightFront",
+    default: "RightFront — Geo-Aware App Store & Play Store Links",
+    template: "%s — RightFront • Smart App Store Links",
   },
   description:
-    "Geo-aware links that route each user to the correct App Store or Play Store for their country or region—so you stop losing installs to Not Available and Not Found pages.",
+    "Geo‑aware App Store and Play Store links that automatically route users to the correct regional storefront—so you never lose installs to “Not Available” pages again.",
   applicationName: "RightFront",
   keywords: [
     "app store link",
-    "smart link",
-    "deep link",
     "app store redirect",
-    "google play redirect",
-    "storefront link",
-    "right storefront",
-    "localization",
-    "marketing links",
+    "geo-aware links",
+    "smart link generator",
+    "app marketing link",
+    "play store redirect",
+    "mobile app localization",
+    "deep link alternative",
+    "storefront redirect",
+    "global app distribution",
   ],
   alternates: {
     canonical: "/",
@@ -40,29 +45,59 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "RightFront",
-    title: "RightFront — Right Storefront Links",
+    title: "RightFront — Geo‑Aware App Store & Play Store Links",
     description:
-      "Geo-aware links that route each user to the correct App Store or Play Store for their country or region—so you stop losing installs to Not Available and Not Found pages.",
+      "RightFront automatically routes users to the correct App Store or Play Store for their country—so you stop losing installs to Not Available pages.",
   },
   twitter: {
     card: "summary",
-    title: "RightFront — Right Storefront Links",
+    title: "RightFront — Geo‑Aware App Store & Play Store Links",
     description:
-      "Geo-aware links that route each user to the correct App Store or Play Store for their country or region—so you stop losing installs to Not Available and Not Found pages.",
+      "Automatically route users to the correct App Store or Play Store storefront worldwide with RightFront.",
   },
   robots: {
     index: true,
     follow: true,
   },
+  manifest: "/site.webmanifest",
 };
+
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  colorScheme: "dark",
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "RightFront",
+  operatingSystem: "Web",
+  applicationCategory: "DeveloperTool",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  description:
+    "Geo-aware links that route users to the correct App Store or Play Store automatically.",
+  url: "https://rightfront.app",
+} as const;
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-slate-100 antialiased`}
       >

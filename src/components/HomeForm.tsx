@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 
 import { detectPlatform, Platform } from "@/lib/platform";
 
+const EXAMPLE_APPS = [
+  { id: "id324684580", label: "iOS example (Spotify)" },
+  { id: "com.spotify.music", label: "Android example (Spotify)" },
+];
+
 export function HomeForm() {
   const router = useRouter();
+  const [copied, setCopied] = useState(false);
   const [appId, setAppId] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -31,6 +37,21 @@ export function HomeForm() {
     });
   }
 
+  async function handleCopy() {
+    const id = appId.trim();
+    if (!id || !detectedPlatform) return;
+
+    const url = `${window.location.origin}/link?id=${encodeURIComponent(id)}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Optional: fallback or silent fail
+    }
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -52,13 +73,28 @@ export function HomeForm() {
       </div>
 
       <input
+        autoFocus
         type="text"
         value={appId}
-        onChange={(e) => setAppId(e.target.value)}
+        onChange={(e) => setAppId(e.target.value.trimStart())}
         placeholder="e.g., id324684580 or com.spotify.music"
         className="mt-1 mb-6 w-full rounded-md border border-slate-700 bg-transparent p-2 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/80 focus:outline-none"
         required
       />
+
+      <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+        <span className="opacity-70">Try:</span>
+        {EXAMPLE_APPS.map((example) => (
+          <button
+            key={example.id}
+            type="button"
+            onClick={() => setAppId(example.id)}
+            className="rounded-md border border-slate-700 px-2 py-1 font-mono text-slate-300 transition-colors hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+          >
+            {example.id}
+          </button>
+        ))}
+      </div>
 
       <button
         type="submit"
@@ -83,6 +119,19 @@ export function HomeForm() {
             <>Go to Storefront</>
           )}
         </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={handleCopy}
+        disabled={!isValid}
+        className={`mt-3 w-full rounded-md border border-slate-700 py-2 text-sm font-medium transition-colors ${
+          isValid
+            ? "text-slate-200 hover:border-blue-500/60 hover:bg-blue-500/10"
+            : "cursor-not-allowed text-slate-500"
+        }`}
+      >
+        {copied ? "Link copied ✓" : "Copy link"}
       </button>
     </form>
   );

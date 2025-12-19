@@ -1,21 +1,42 @@
+import Link from "next/link";
+
 import { HomeForm } from "@/components/HomeForm";
 
 export default function HomePage() {
   return (
     <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
-      {/* Header */}
-      <header className="relative z-10 flex justify-center border-b border-gray-800 px-6 py-4">
+      <header className="relative z-10 flex items-center justify-between border-b border-gray-800 px-6 py-4">
+        {/* Logo */}
         <h1 className="text-2xl font-semibold tracking-tight">
-          <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
-            Right
-          </span>
-          <span className="relative -top-0.5 mx-0.5 font-bold text-slate-100">
-            |
-          </span>
-          <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-            front
+          <Link
+            href="/"
+            className="focus-visible:ring-2 focus-visible:ring-blue-400"
+          >
+            <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+              Right
+            </span>
+            <span className="relative -top-0.5 mx-0.5 font-bold text-slate-100">
+              |
+            </span>
+            <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+              front
+            </span>
+          </Link>
+
+          <span className="ml-2 rounded-full bg-sky-500/20 px-2 py-0.5 align-middle text-xs font-semibold tracking-wide text-sky-300">
+            beta
           </span>
         </h1>
+
+        {/* Simple Nav */}
+        <nav className="flex items-center gap-4 text-sm text-slate-400">
+          <a
+            href="/how-it-works"
+            className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
+          >
+            How it works
+          </a>
+        </nav>
       </header>
 
       {/* Hero */}
@@ -46,12 +67,16 @@ export default function HomePage() {
           A geo-aware link that routes each user to the correct{" "}
           <span className="font-semibold text-slate-100">App Store</span> or{" "}
           <span className="font-semibold text-slate-100">Play Store</span> for
-          their country or region. Stop losing installs to{" "}
+          their country or region whenever supported. Stop losing installs to{" "}
           <span className="font-semibold text-sky-200">“Not Available”</span>{" "}
           pages.
         </p>
 
         <HomeForm />
+        <p className="mt-4 max-w-md text-center text-xs text-slate-400/80">
+          Play Store localization depends on Google account, region, and
+          availability.
+        </p>
       </section>
 
       {/* Footer */}

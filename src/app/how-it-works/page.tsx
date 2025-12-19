@@ -1,0 +1,124 @@
+import Link from "next/link";
+
+export const metadata = {
+  title: "How RightFront Works — Geo-Aware App Store Links",
+  description:
+    "Learn how RightFront fixes Apple App Store country issues and routes users to the correct App Store or Play Store storefront automatically.",
+};
+
+export default function HowItWorksPage() {
+  return (
+    <main className="mx-auto max-w-4xl px-6 py-16 text-slate-100">
+      <header className="mb-10 flex items-center justify-between">
+        <h1 className="text-4xl font-extrabold tracking-tight">
+          How Rightfront Works
+        </h1>
+        <Link
+          href="/"
+          className="rounded text-sm text-slate-400 underline-offset-4 hover:text-slate-100 hover:underline focus-visible:ring-2 focus-visible:ring-blue-400"
+        >
+          ← Back to Home
+        </Link>
+      </header>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold">
+          The problem with app store links
+        </h2>
+        <p className="mb-4 text-slate-300">
+          There is no truly universal app store link.
+        </p>
+        <p className="mb-4 text-slate-300">
+          When someone clicks a standard App Store or Play Store link, the store
+          may open in the wrong country, show a “Not Available in Your Region”
+          message, or display the wrong storefront language.
+        </p>
+        <p className="text-slate-300">
+          This is especially common when sharing links internationally or
+          running global campaigns.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold">
+          Apple App Store: the core issue
+        </h2>
+        <p className="mb-4 text-slate-300">
+          Apple’s App Store does not provide a global link that automatically
+          routes users to the correct country storefront.
+        </p>
+        <pre className="mb-4 rounded-md bg-slate-900 p-4 text-sm text-slate-200">
+          https://apps.apple.com/us/app/id123456789
+        </pre>
+        <p className="text-slate-300">
+          This link always opens the US App Store, even for users in other
+          countries. If the app isn&apos;t available, users see a “not
+          available” error.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold">
+          How RightFront fixes Apple App Store links
+        </h2>
+        <p className="mb-4 text-slate-300">
+          RightFront detects the user&apos;s country and redirects them to the
+          correct Apple App Store storefront.
+        </p>
+        <ul className="ml-6 list-disc text-slate-300">
+          <li>User in Germany → apps.apple.com/de/app/…</li>
+          <li>User in Japan → apps.apple.com/jp/app/…</li>
+          <li>User in Brazil → apps.apple.com/br/app/…</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold">
+          What about Google Play Store?
+        </h2>
+        <p className="mb-4 text-slate-300">
+          Google Play generally handles localization better than Apple and often
+          auto-detects country and language.
+        </p>
+        <p className="text-slate-300">
+          RightFront includes Play Store support as a best-effort enhancement.
+          Actual localization depends on Google account settings, regional
+          availability, and store behavior.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold">
+          What RightFront does (and doesn’t do)
+        </h2>
+        <ul className="ml-6 list-disc text-slate-300">
+          <li>Detects user country automatically</li>
+          <li>Routes users to the correct store front</li>
+          <li>Works without SDKs or deep linking</li>
+          <li>Supports Apple App Store and Google Play</li>
+          <li>Does not bypass store restrictions</li>
+          <li>Does not change app availability</li>
+          <li>Does not require user accounts</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="mb-4 text-2xl font-semibold">Example</h2>
+        <p className="mb-4 text-slate-300">
+          Instead of sharing a country-specific App Store link:
+        </p>
+        <pre className="mb-4 rounded-md bg-slate-900 p-4 text-sm text-slate-200">
+          https://apps.apple.com/us/app/id324684580
+        </pre>
+        <p className="mb-4 text-slate-300">Share a RightFront link:</p>
+        <pre className="rounded-md bg-slate-900 p-4 text-sm text-slate-200">
+          https://rightfront.io/link?id=id324684580
+        </pre>
+        <p className="mt-4 text-slate-300">
+          RightFront takes care of routing users to the correct App Store
+          storefront automatically.
+        </p>
+      </section>
+    </main>
+  );
+}
