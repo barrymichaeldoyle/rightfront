@@ -11,7 +11,7 @@ export default function HowItWorksPage() {
     <main className="mx-auto max-w-4xl px-6 py-16 text-slate-100">
       <header className="mb-10 flex items-center justify-between">
         <h1 className="text-4xl font-extrabold tracking-tight">
-          How Rightfront Works
+          How RightFront Works
         </h1>
         <Link
           href="/"
@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
 
       <section className="mb-12">
         <h2 className="mb-4 text-2xl font-semibold">
-          What RightFront does (and doesn’t do)
+          What RightFront does (and doesn&apos;t do)
         </h2>
         <ul className="ml-6 list-disc text-slate-300">
           <li>Detects user country automatically</li>

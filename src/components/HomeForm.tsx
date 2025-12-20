@@ -100,24 +100,21 @@ export function HomeForm() {
         type="submit"
         disabled={isDisabled}
         aria-busy={isPending}
-        className={`w-full rounded-md py-2 font-medium transition-all duration-200 ${
+        className={`h-10 w-full rounded-md py-2 font-medium transition-all duration-200 ${
           !isDisabled
             ? "cursor-pointer bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/30 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:outline-none active:translate-y-px"
             : "cursor-not-allowed bg-slate-700 text-slate-400"
         }`}
       >
         <span className="inline-flex items-center justify-center gap-2">
-          {isPending ? (
-            <>
-              <span
-                className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                aria-hidden="true"
-              />
-              Redirecting…
-            </>
-          ) : (
-            <>Go to Storefront</>
-          )}
+          {/* Reserve space for the spinner to avoid subtle layout shift on click */}
+          <span
+            className={`h-4 w-4 rounded-full border-2 border-white/30 border-t-white ${
+              isPending ? "animate-spin opacity-100" : "opacity-0"
+            }`}
+            aria-hidden="true"
+          />
+          <span>{isPending ? "Redirecting…" : "Go to Storefront"}</span>
         </span>
       </button>
 

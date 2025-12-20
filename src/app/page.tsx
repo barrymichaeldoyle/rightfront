@@ -19,7 +19,7 @@ export default function HomePage() {
               |
             </span>
             <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-              front
+              Front
             </span>
           </Link>
 
@@ -52,7 +52,7 @@ export default function HomePage() {
             </span>{" "}
             <span className="font-bold text-slate-100">App Store</span>
             <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-              front
+              Front
             </span>
           </span>
 
@@ -91,7 +91,7 @@ export default function HomePage() {
               |
             </span>
             <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-              front
+              Front
             </span>
           </span>
           <span className="opacity-80">
