@@ -1,18 +1,38 @@
 import Link from "next/link";
 
+import { config } from "@/lib/config";
+
+import { AnchorHeading } from "./AnchorHeading";
+
 export const metadata = {
   title: "How RightFront Works — Geo-Aware App Store Links",
   description:
     "Learn how RightFront fixes Apple App Store country issues and routes users to the correct App Store or Play Store storefront automatically.",
 };
 
+function BrandMark() {
+  return (
+    <span className="font-semibold tracking-tight">
+      <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        Right
+      </span>
+      <span className="relative -top-0.25 mx-0.5 font-bold text-slate-100">
+        |
+      </span>
+      <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+        Front
+      </span>
+    </span>
+  );
+}
+
 export default function HowItWorksPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16 text-slate-100">
       <header className="mb-10 flex items-center justify-between">
-        <h1 className="text-4xl font-extrabold tracking-tight">
-          How RightFront Works
-        </h1>
+        <AnchorHeading id="top" as="h1">
+          How <BrandMark /> Works
+        </AnchorHeading>
         <Link
           href="/"
           className="rounded text-sm text-slate-400 underline-offset-4 hover:text-slate-100 hover:underline focus-visible:ring-2 focus-visible:ring-blue-400"
@@ -22,9 +42,9 @@ export default function HowItWorksPage() {
       </header>
 
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">
+        <AnchorHeading id="problem">
           The problem with app store links
-        </h2>
+        </AnchorHeading>
         <p className="mb-4 text-slate-300">
           There is no truly universal app store link.
         </p>
@@ -40,9 +60,9 @@ export default function HowItWorksPage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">
+        <AnchorHeading id="apple-core-issue">
           Apple App Store: the core issue
-        </h2>
+        </AnchorHeading>
         <p className="mb-4 text-slate-300">
           Apple’s App Store does not provide a global link that automatically
           routes users to the correct country storefront.
@@ -52,18 +72,19 @@ export default function HowItWorksPage() {
         </pre>
         <p className="text-slate-300">
           This link always opens the US App Store, even for users in other
-          countries. If the app isn&apos;t available, users see a “not
-          available” error.
+          countries. If the app isn&apos;t available in that storefront, users
+          are shown a “The page you&apos;re looking for can&apos;t be found”
+          error.
         </p>
       </section>
 
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">
-          How RightFront fixes Apple App Store links
-        </h2>
+        <AnchorHeading id="how-it-works-apple">
+          How <BrandMark /> fixes Apple App Store links
+        </AnchorHeading>
         <p className="mb-4 text-slate-300">
-          RightFront detects the user&apos;s country and redirects them to the
-          correct Apple App Store storefront.
+          <BrandMark /> detects the user&apos;s country and redirects them to
+          the correct Apple App Store storefront.
         </p>
         <ul className="ml-6 list-disc text-slate-300">
           <li>User in Germany → apps.apple.com/de/app/…</li>
@@ -73,24 +94,24 @@ export default function HowItWorksPage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">
+        <AnchorHeading id="google-play">
           What about Google Play Store?
-        </h2>
+        </AnchorHeading>
         <p className="mb-4 text-slate-300">
           Google Play generally handles localization better than Apple and often
           auto-detects country and language.
         </p>
         <p className="text-slate-300">
-          RightFront includes Play Store support as a best-effort enhancement.
-          Actual localization depends on Google account settings, regional
-          availability, and store behavior.
+          <BrandMark /> includes Play Store support as a best-effort
+          enhancement. Actual localization depends on Google account settings,
+          regional availability, and store behavior.
         </p>
       </section>
 
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">
-          What RightFront does (and doesn&apos;t do)
-        </h2>
+        <AnchorHeading id="what-it-does">
+          What <BrandMark /> does (and doesn&apos;t do)
+        </AnchorHeading>
         <ul className="ml-6 list-disc text-slate-300">
           <li>Detects user country automatically</li>
           <li>Routes users to the correct store front</li>
@@ -103,19 +124,21 @@ export default function HowItWorksPage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Example</h2>
+        <AnchorHeading id="example">Example</AnchorHeading>
         <p className="mb-4 text-slate-300">
           Instead of sharing a country-specific App Store link:
         </p>
         <pre className="mb-4 rounded-md bg-slate-900 p-4 text-sm text-slate-200">
           https://apps.apple.com/us/app/id324684580
         </pre>
-        <p className="mb-4 text-slate-300">Share a RightFront link:</p>
+        <p className="mb-4 text-slate-300">
+          Share a <BrandMark /> link:
+        </p>
         <pre className="rounded-md bg-slate-900 p-4 text-sm text-slate-200">
-          https://rightfront.io/link?id=id324684580
+          {`${config.siteUrl}/link?id=id324684580`}
         </pre>
         <p className="mt-4 text-slate-300">
-          RightFront takes care of routing users to the correct App Store
+          <BrandMark /> takes care of routing users to the correct App Store
           storefront automatically.
         </p>
       </section>

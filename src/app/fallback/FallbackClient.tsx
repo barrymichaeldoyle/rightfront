@@ -3,6 +3,8 @@
 import { SVGProps } from "react";
 import { useSearchParams } from "next/navigation";
 
+import useSWR from "swr";
+
 import { detectPlatform } from "@/lib/platform";
 
 function ExternalLinkIcon(props: SVGProps<SVGSVGElement>) {
@@ -25,10 +27,36 @@ function ExternalLinkIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+const fetcher = (url: string) =>
+  fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r)));
+
 export function FallbackClient() {
   const params = useSearchParams();
-  const id = params.get("id");
+  const id = params.get("id")?.trim() || "";
   const country = params.get("country");
+
+  const store = id ? detectPlatform(id) : null;
+  const encodedId = encodeURIComponent(id);
+
+  // SWR for Apple App Stores (must be called unconditionally to satisfy Hooks rules)
+  const shouldFetch = store === "ios" && Boolean(id);
+  const { data, isLoading, error } = useSWR(
+    shouldFetch ? `/api/availability?id=${encodedId}` : null,
+    fetcher,
+    { revalidateOnFocus: false },
+  );
+
+  const storeName = store === "ios" ? "App Store" : "Play Store";
+  const usStoreUrl =
+    store === "ios"
+      ? `https://apps.apple.com/us/app/${encodedId}`
+      : `https://play.google.com/store/apps/details?id=${encodedId}`;
+  const genericStoreUrl =
+    store === "ios"
+      ? `https://apps.apple.com/app/${encodedId}`
+      : `https://play.google.com/store/apps/details?id=${encodedId}`;
+
+  const availableStores = data?.available ?? [];
 
   if (!id) {
     return (
@@ -38,8 +66,6 @@ export function FallbackClient() {
       </main>
     );
   }
-
-  const store = detectPlatform(id);
 
   if (!store) {
     return (
@@ -54,37 +80,49 @@ export function FallbackClient() {
     );
   }
 
-  const storeName = store === "ios" ? "App Store" : "Play Store";
-  const encodedId = encodeURIComponent(id);
-  const usStoreUrl =
-    store === "ios"
-      ? `https://apps.apple.com/us/app/${encodedId}`
-      : `https://play.google.com/store/apps/details?id=${encodedId}`;
-  const genericStoreUrl =
-    store === "ios"
-      ? `https://apps.apple.com/app/${encodedId}`
-      : `https://play.google.com/store/apps/details?id=${encodedId}`;
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-3 p-6 text-center">
       <h1 className="mb-1 text-3xl font-semibold">App Not Available</h1>
       <p className="mb-2 max-w-lg text-gray-600">
         This app isn&apos;t available in your region (
-        {country?.toUpperCase() || "Unknown"}
-        ). App availability is controlled by the store owner, not RightFront.
+        {country?.toUpperCase() || "Unknown"}). App availability is controlled
+        by the store owner, not RightFront.
       </p>
-      <a
-        href={usStoreUrl}
-        className="inline-flex items-center gap-1 text-blue-500 underline"
-      >
-        Try the US {storeName} <ExternalLinkIcon className="h-4 w-4" />
-      </a>
-      <a
-        href={genericStoreUrl}
-        className="inline-flex items-center gap-1 text-blue-500 underline"
-      >
-        Try the Generic {storeName} <ExternalLinkIcon className="h-4 w-4" />
-      </a>
+
+      {/* Apple-only extra availability */}
+      {store === "ios" && (
+        <section className="mt-6">
+          {isLoading && (
+            <p className="animate-pulse text-sm text-gray-500">
+              Checking available App Stores…
+            </p>
+          )}
+
+          {!isLoading && availableStores.length > 0 && (
+            <>
+              <p className="mb-2 text-sm text-gray-500">Also available in:</p>
+              <ul className="flex flex-wrap justify-center gap-2 text-sm text-blue-400">
+                {availableStores.map((cc: string) => (
+                  <li key={cc}>
+                    <a
+                      href={`https://apps.apple.com/${cc}/app/${encodedId}`}
+                      className="underline hover:text-blue-300"
+                    >
+                      {cc.toUpperCase()} Store
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {!isLoading && !error && availableStores.length === 0 && (
+            <p className="text-sm text-gray-500">
+              Couldn&apos;t find available App Stores for this app.
+            </p>
+          )}
+        </section>
+      )}
     </main>
   );
 }
