@@ -76,6 +76,22 @@ function FlagSlot({ code }: { code: string }) {
   );
 }
 
+function BrandMark() {
+  return (
+    <span className="font-semibold tracking-tight">
+      <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        Right
+      </span>
+      <span className="relative -top-0.25 mx-0.5 font-bold text-slate-100">
+        |
+      </span>
+      <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+        Front
+      </span>
+    </span>
+  );
+}
+
 function InlineStorefront({ code }: { code: string }) {
   const cc = normalizeCountryCodeForFlag(code);
   return (
@@ -220,14 +236,14 @@ export function FallbackClient() {
                   <>
                     {" "}
                     — simulating{" "}
-                    <InlineStorefront code={selectedStorefront ?? ""} />. .
+                    <InlineStorefront code={selectedStorefront ?? ""} />.
                   </>
                 ) : (
                   "."
                 )}
               </>
             )}
-            <br />A standard RightFront link (e.g.{" "}
+            <br />A standard <BrandMark /> link (e.g.{" "}
             <a
               href={`/link?id=${encodedId}`}
               className="font-mono text-sky-300 underline-offset-4 hover:underline"
@@ -262,7 +278,7 @@ export function FallbackClient() {
           <>
             This app isn&apos;t available in your region (
             {country ? <InlineStorefront code={country} /> : "Unknown"}). App
-            availability is controlled by the store owner, not RightFront.
+            availability is controlled by the store owner, not <BrandMark />.
             {detectedStorefront && (
               <>
                 {" "}
