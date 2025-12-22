@@ -91,8 +91,24 @@ const appearance = {
     colorPrimary: "#2563eb",
     colorBackground: "#020617",
     colorText: "#e2e8f0",
+    colorTextSecondary: "#94a3b8",
+    colorDanger: "#ef4444",
     borderRadius: "12px",
     fontFamily: "var(--font-geist-sans)",
+  },
+  elements: {
+    userButtonPopoverCard:
+      "border border-slate-700/70 bg-slate-900/95 text-slate-100 shadow-2xl backdrop-blur",
+    userButtonPopoverFooter: "border-t border-slate-700/70",
+    userButtonPopoverActionButton:
+      "rounded-md text-slate-100 hover:bg-slate-800/60",
+    userButtonPopoverActionButtonText: "text-slate-100",
+    userButtonPopoverActionButtonIcon: "text-slate-300",
+    userButtonPopoverActionButton__signOut: "rounded-md hover:bg-red-500/10",
+    userButtonPopoverActionButtonText__signOut: "text-red-200",
+    userButtonPopoverActionButtonIcon__signOut: "text-red-300",
+    userButtonPopoverActionButton__manageAccount:
+      "rounded-md hover:bg-slate-800/60",
   },
 };
 

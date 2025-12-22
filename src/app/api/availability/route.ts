@@ -126,7 +126,19 @@ type AppleAppMeta = {
 };
 
 // Simple in‑memory cache (persists while serverless function stays warm)
-type CacheEntry = { ts: number; data: string[]; app: AppleAppMeta | null };
+type AppleStoreMeta = {
+  price: string | null;
+  rating: number | null;
+  ratingCount: number | null;
+  storeUrl: string | null;
+};
+
+type CacheEntry = {
+  ts: number;
+  data: string[];
+  app: AppleAppMeta | null;
+  stores: Record<string, AppleStoreMeta>;
+};
 const cache = new Map<string, CacheEntry>();
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -150,12 +162,16 @@ export async function GET(request: Request) {
       id,
       available: cached.data,
       app: cached.app,
+      stores: cached.data.map((country) => ({
+        country,
+        ...cached.stores[country],
+      })),
       scope: scopeKey,
       cached: true,
     });
   }
 
-  const available: string[] = [];
+  const stores: Record<string, AppleStoreMeta> = {};
   let app: AppleAppMeta | null = null;
 
   const checks = probeCountries.map(async (country) => {
@@ -167,10 +183,19 @@ export async function GET(request: Request) {
       if (!res.ok) return;
       const data = await res.json();
       if (data?.resultCount > 0) {
-        available.push(country);
+        const r = data?.results?.[0];
+        stores[country] = {
+          price: r?.formattedPrice ?? null,
+          rating:
+            typeof r?.averageUserRating === "number"
+              ? r.averageUserRating
+              : null,
+          ratingCount:
+            typeof r?.userRatingCount === "number" ? r.userRatingCount : null,
+          storeUrl: r?.trackViewUrl ?? null,
+        };
 
         if (!app) {
-          const r = data?.results?.[0];
           if (r && typeof r.trackId === "number") {
             app = {
               trackId: r.trackId,
@@ -199,12 +224,28 @@ export async function GET(request: Request) {
   });
 
   await Promise.allSettled(checks);
-  cache.set(cacheKey, { ts: now, data: available, app });
+  const available = probeCountries
+    .map((country, index) => ({
+      country,
+      index,
+      meta: stores[country] ?? null,
+    }))
+    .filter((x) => Boolean(x.meta))
+    .sort((a, b) => {
+      const aCount = a.meta?.ratingCount ?? -1;
+      const bCount = b.meta?.ratingCount ?? -1;
+      // Higher review count first; tie-break by original probe order.
+      if (bCount !== aCount) return bCount - aCount;
+      return a.index - b.index;
+    })
+    .map((x) => x.country);
+  cache.set(cacheKey, { ts: now, data: available, app, stores });
 
   return NextResponse.json({
     id,
     available,
     app,
+    stores: available.map((country) => ({ country, ...stores[country] })),
     scope: scopeKey,
     cached: false,
   });

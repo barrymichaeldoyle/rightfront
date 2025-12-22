@@ -8,6 +8,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 
+import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
 
 export default function HomePage() {
@@ -76,7 +77,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
+      <section className="relative z-10 flex flex-col items-center justify-center px-6 py-16 text-center">
         <h2 className="mb-4 leading-tight drop-shadow">
           <span className="mb-2 block text-xl font-semibold text-slate-100 md:text-2xl">
             Send users to the
@@ -114,6 +115,8 @@ export default function HomePage() {
           availability.
         </p>
       </section>
+
+      <FallbackDemo />
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-gray-800 py-6 text-center text-sm text-slate-400">
