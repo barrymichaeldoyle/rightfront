@@ -16,11 +16,30 @@ export async function GET(
     return new Response("Missing slug", { status: 400 });
   }
 
-  const rows = await db
-    .select({ appId: userLinks.appId })
-    .from(userLinks)
-    .where(eq(userLinks.slug, slug))
-    .limit(1);
+  let rows: Array<{ appId: string }> = [];
+  try {
+    rows = await db
+      .select({ appId: userLinks.appId })
+      .from(userLinks)
+      .where(eq(userLinks.slug, slug))
+      .limit(1);
+  } catch (err) {
+    const e = err as { code?: string; message?: string; cause?: unknown };
+    const msg = String(e?.message ?? "");
+    const causeMsg =
+      e?.cause && typeof e.cause === "object" && "message" in e.cause
+        ? String((e.cause as { message?: unknown }).message ?? "")
+        : "";
+    const combined = `${msg}\n${causeMsg}`.toLowerCase();
+    // If DB isn't migrated yet, return 404 instead of crashing edge/server.
+    if (
+      e?.code === "42P01" ||
+      combined.includes('relation "user_links" does not exist')
+    ) {
+      return new Response("Not found", { status: 404 });
+    }
+    throw err;
+  }
 
   const row = rows[0];
   if (!row) {

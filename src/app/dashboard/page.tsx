@@ -17,6 +17,18 @@ function formatDate(d: Date | null): string {
   return d.toISOString().slice(0, 10);
 }
 
+function isMissingUserLinksTable(err: unknown): boolean {
+  const e = err as { code?: string; message?: string; cause?: unknown };
+  if (e?.code === "42P01") return true; // undefined_table
+  const msg = String(e?.message ?? "");
+  const causeMsg =
+    e?.cause && typeof e.cause === "object" && "message" in e.cause
+      ? String((e.cause as { message?: unknown }).message ?? "")
+      : "";
+  const combined = `${msg}\n${causeMsg}`.toLowerCase();
+  return combined.includes('relation "user_links" does not exist');
+}
+
 export default async function DashboardHomePage() {
   const { userId } = await auth();
   if (!userId) {
@@ -34,25 +46,52 @@ export default async function DashboardHomePage() {
     const id = String(formData.get("id") ?? "").trim();
     if (!id) return;
 
-    await db
-      .delete(userLinks)
-      .where(and(eq(userLinks.id, id), eq(userLinks.userId, actionUserId)));
+    try {
+      await db
+        .delete(userLinks)
+        .where(and(eq(userLinks.id, id), eq(userLinks.userId, actionUserId)));
+    } catch (err) {
+      // If prod DB isn't migrated yet, don't blow up the dashboard.
+      if (!isMissingUserLinksTable(err)) {
+        throw err;
+      }
+    }
 
     revalidatePath("/dashboard");
   }
 
-  const links = await db
-    .select({
-      id: userLinks.id,
-      slug: userLinks.slug,
-      appId: userLinks.appId,
-      platform: userLinks.platform,
-      clicks: userLinks.clicks,
-      createdAt: userLinks.createdAt,
-    })
-    .from(userLinks)
-    .where(eq(userLinks.userId, userId))
-    .orderBy(desc(userLinks.createdAt));
+  const { links, dbNotInitialized } = await (async (): Promise<{
+    links: Array<{
+      id: string;
+      slug: string;
+      appId: string;
+      platform: string;
+      clicks: number | null;
+      createdAt: Date | null;
+    }>;
+    dbNotInitialized: boolean;
+  }> => {
+    try {
+      const links = await db
+        .select({
+          id: userLinks.id,
+          slug: userLinks.slug,
+          appId: userLinks.appId,
+          platform: userLinks.platform,
+          clicks: userLinks.clicks,
+          createdAt: userLinks.createdAt,
+        })
+        .from(userLinks)
+        .where(eq(userLinks.userId, userId))
+        .orderBy(desc(userLinks.createdAt));
+      return { links, dbNotInitialized: false };
+    } catch (err) {
+      if (isMissingUserLinksTable(err)) {
+        return { links: [], dbNotInitialized: true };
+      }
+      throw err;
+    }
+  })();
 
   return (
     <section className="mx-auto w-full max-w-5xl px-6 py-10">
@@ -70,6 +109,16 @@ export default async function DashboardHomePage() {
           + New Link
         </Link>
       </div>
+
+      {dbNotInitialized ? (
+        <div className="mb-4 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-5 text-sm text-amber-200">
+          Your production database doesn&apos;t have the{" "}
+          <span className="font-mono text-amber-100">user_links</span> table
+          yet. Run your Drizzle migrations against prod{" "}
+          <span className="font-mono text-amber-100">DATABASE_URL</span>, then
+          refresh.
+        </div>
+      ) : null}
 
       {links.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/20 p-6">

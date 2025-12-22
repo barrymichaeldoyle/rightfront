@@ -53,6 +53,7 @@ function dbErrorToUserMessage(err: unknown, slug: string): string {
 
   // Missing table / migrations not applied
   if (
+    e?.code === "42P01" ||
     combined.includes('relation "user_links" does not exist') ||
     combined.includes("does not exist") ||
     combined.includes("undefined_table")
@@ -108,11 +109,16 @@ export default function NewLinkPage() {
     }
 
     // Fast pre-check to give a friendly error before we hit the unique index.
-    const existing = await db
-      .select({ slug: userLinks.slug })
-      .from(userLinks)
-      .where(eq(userLinks.slug, slug))
-      .limit(1);
+    let existing: Array<{ slug: string }> = [];
+    try {
+      existing = await db
+        .select({ slug: userLinks.slug })
+        .from(userLinks)
+        .where(eq(userLinks.slug, slug))
+        .limit(1);
+    } catch (err) {
+      return { ok: false, error: dbErrorToUserMessage(err, slug) };
+    }
 
     if (existing.length > 0) {
       return {

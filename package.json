@@ -8,6 +8,7 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "eslint",
+    "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
