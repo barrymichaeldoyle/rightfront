@@ -6,3 +6,74 @@
     min-height: 100%;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Clerk UI hard overrides (avoid Tailwind-content + specificity pitfalls)     */
+/* -------------------------------------------------------------------------- */
+
+/* UserButton popover container */
+.cl-userButtonPopoverCard {
+  background: rgba(2, 6, 23, 0.95) !important; /* slate-950 */
+  border: 1px solid rgba(148, 163, 184, 0.25) !important; /* slate-400/25 */
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.16),
+    0 24px 64px -24px rgba(0, 0, 0, 0.75) !important;
+  color: rgb(226, 232, 240) !important; /* slate-200 */
+}
+
+/* Make action rows/text readable (some Clerk internals set their own colors) */
+.cl-userButtonPopoverActionButton,
+.cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButtonText * {
+  color: rgb(226, 232, 240) !important; /* slate-200 */
+}
+
+.cl-userButtonPopoverActionButton:hover {
+  background: rgba(30, 41, 59, 0.55) !important; /* slate-800/55 */
+}
+
+/* Sign out: force contrast */
+.cl-userButtonPopoverActionButton__signOut,
+.cl-userButtonPopoverActionButton__signOut
+  .cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButton__signOut
+  .cl-userButtonPopoverActionButtonText
+  * {
+  color: rgb(254, 202, 202) !important; /* red-200 */
+}
+
+.cl-userButtonPopoverActionButton__signOut:hover {
+  background: rgba(239, 68, 68, 0.1) !important; /* red-500/10 */
+}
+
+/* Manage account modal (UserProfile modal)
+   Put the border/shadow on the OUTER card shell. */
+.cl-cardBox {
+  background: rgba(2, 6, 23, 0.96) !important; /* slate-950 */
+  border: 1px solid rgba(148, 163, 184, 0.28) !important; /* slate-400/28 */
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.18),
+    0 36px 120px -60px rgba(0, 0, 0, 0.9) !important;
+  color: rgb(226, 232, 240) !important; /* slate-200 */
+}
+
+/* Inner content should not draw its own frame */
+.cl-modalContent {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Neutralize nested cards within the modal so the frame stays on the wrapper */
+.cl-cardBox .cl-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Optional: soften the modal backdrop slightly (keeps focus on the card) */
+.cl-modalBackdrop {
+  background: rgba(2, 6, 23, 0.72) !important;
+}

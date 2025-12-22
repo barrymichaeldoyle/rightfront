@@ -56,7 +56,7 @@ export default function HomePage() {
                 <SignInButton>
                   <button
                     type="button"
-                    className="rounded-md border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-900 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="cursor-pointer rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
                     Sign in
                   </button>
@@ -64,7 +64,7 @@ export default function HomePage() {
                 <SignUpButton>
                   <button
                     type="button"
-                    className="rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="cursor-pointer rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
                     Sign up
                   </button>
@@ -169,23 +169,40 @@ export default function HomePage() {
           pages.
         </p>
 
+        <HomeForm />
+        <p className="mt-4 max-w-md text-center text-xs text-slate-400/80">
+          Play Store localization depends on Google account, region, and
+          availability.
+        </p>
+
         <SignedOut>
-          <div className="mb-10 w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/30 p-5 text-left">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+          <div className="my-10 w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/30 p-5 text-left">
+            <div className="flex flex-col items-center justify-between gap-4">
+              <div className="w-full max-w-xl">
                 <p className="text-sm font-semibold text-slate-100">
                   Want permalinks for your iOS App Store pages?
                 </p>
                 <p className="mt-1 text-sm text-slate-300">
-                  Create an account to generate and manage your own RightFront
+                  Create an account to generate and manage your own{" "}
+                  <span className="font-semibold tracking-tight">
+                    <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+                      Right
+                    </span>
+                    <span className="relative -top-0.25 mx-0.5 font-bold text-slate-100">
+                      |
+                    </span>
+                    <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+                      Front
+                    </span>
+                  </span>{" "}
                   permalinks.
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex w-full max-w-xl flex-1 flex-col gap-2 sm:flex-row">
                 <SignUpButton>
                   <button
                     type="button"
-                    className="rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="flex-1 cursor-pointer rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
                     Sign up to generate permalinks
                   </button>
@@ -193,7 +210,7 @@ export default function HomePage() {
                 <SignInButton>
                   <button
                     type="button"
-                    className="rounded-md border border-slate-700 bg-slate-900/40 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-900 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="flex-1 cursor-pointer rounded-md border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
                     Sign in
                   </button>
@@ -202,12 +219,6 @@ export default function HomePage() {
             </div>
           </div>
         </SignedOut>
-
-        <HomeForm />
-        <p className="mt-4 max-w-md text-center text-xs text-slate-400/80">
-          Play Store localization depends on Google account, region, and
-          availability.
-        </p>
       </section>
 
       <FallbackDemo />
