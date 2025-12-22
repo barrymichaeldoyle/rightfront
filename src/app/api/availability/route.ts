@@ -53,7 +53,7 @@ const ASIA: readonly string[] = [
 ];
 const AFRICA: readonly string[] = ["za", "eg", "ng", "ke", "ma"];
 const OCEANIA: readonly string[] = ["au", "nz"];
-console.log(Intl.getCanonicalLocales());
+
 const GLOBAL_FALLBACK: readonly string[] = ["us", "gb", "de", "jp", "au"];
 
 const CONTINENT_GROUPS: Record<ContinentKey, readonly string[]> = {

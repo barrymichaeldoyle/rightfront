@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
+
 import { HomeForm } from "@/components/HomeForm";
 
 export default function HomePage() {
@@ -28,15 +36,43 @@ export default function HomePage() {
           </span>
         </h1>
 
-        {/* Simple Nav */}
-        <nav className="flex items-center gap-4 text-sm text-slate-400">
-          <a
-            href="/how-it-works"
-            className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
-          >
-            How it works
-          </a>
-        </nav>
+        <div className="flex items-center gap-4">
+          {/* Simple Nav */}
+          <nav className="flex items-center gap-4 text-sm text-slate-400">
+            <a
+              href="/how-it-works"
+              className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              How it works
+            </a>
+          </nav>
+
+          <div className="hidden h-6 w-px bg-gray-800 sm:block" aria-hidden />
+
+          <div className="flex items-center gap-2">
+            <SignedOut>
+              <SignInButton>
+                <button
+                  type="button"
+                  className="rounded-md border border-slate-700 bg-slate-900/40 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-900 focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  Sign in
+                </button>
+              </SignInButton>
+              <SignUpButton>
+                <button
+                  type="button"
+                  className="rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  Sign up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
+        </div>
       </header>
 
       {/* Hero */}

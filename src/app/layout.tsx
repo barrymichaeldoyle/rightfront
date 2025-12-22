@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
@@ -85,28 +86,40 @@ const structuredData = {
   url: "https://rightfront.app",
 } as const;
 
+const appearance = {
+  variables: {
+    colorPrimary: "#2563eb",
+    colorBackground: "#020617",
+    colorText: "#e2e8f0",
+    borderRadius: "12px",
+    fontFamily: "var(--font-geist-sans)",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-slate-100 antialiased`}
-      >
-        <Analytics />
-        <SpeedInsights />
-        {children}
-      </body>
-    </html>
+    <ClerkProvider appearance={appearance}>
+      <html lang="en">
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(structuredData),
+            }}
+          />
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-slate-100 antialiased`}
+        >
+          <Analytics />
+          <SpeedInsights />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
