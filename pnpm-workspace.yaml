@@ -1,4 +1,6 @@
 onlyBuiltDependencies:
   - '@clerk/shared'
+  - bufferutil
+  - esbuild
   - sharp
   - unrs-resolver

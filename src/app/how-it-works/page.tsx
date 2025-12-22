@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BrandMark } from "@/components/BrandLogo";
 import { config } from "@/lib/config";
 
 import { AnchorHeading } from "./AnchorHeading";
@@ -9,22 +10,6 @@ export const metadata = {
   description:
     "Learn how RightFront fixes Apple App Store country issues and routes users to the correct App Store or Play Store storefront automatically.",
 };
-
-function BrandMark() {
-  return (
-    <span className="font-semibold tracking-tight">
-      <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
-        Right
-      </span>
-      <span className="relative -top-0.25 mx-0.5 font-bold text-slate-100">
-        |
-      </span>
-      <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-        Front
-      </span>
-    </span>
-  );
-}
 
 export default function HowItWorksPage() {
   return (
