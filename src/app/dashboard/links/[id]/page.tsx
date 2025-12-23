@@ -12,12 +12,15 @@ import { detectPlatform } from "@/lib/platform";
 import { userLinks } from "@/lib/schema";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 
+import { LinkAnalyticsPanel } from "./LinkAnalyticsPanel";
 import { LinkSettingsForm } from "./LinkSettingsForm";
 
 export default async function LinkSettingsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { userId } = await auth();
   if (!userId) {
@@ -25,6 +28,11 @@ export default async function LinkSettingsPage({
   }
 
   const { id } = await params;
+  const sp = (await searchParams) ?? {};
+  const rangeParamRaw = sp["range"];
+  const rangeParam = Array.isArray(rangeParamRaw)
+    ? rangeParamRaw[0]
+    : rangeParamRaw;
 
   const rows = await db
     .select({
@@ -140,6 +148,15 @@ export default async function LinkSettingsPage({
         >
           ← Back
         </Link>
+      </div>
+
+      <div className="mt-8">
+        <LinkAnalyticsPanel
+          userId={userId}
+          linkId={link.id}
+          clicksCounter={link.clicks ?? 0}
+          range={rangeParam}
+        />
       </div>
 
       <LinkSettingsForm
