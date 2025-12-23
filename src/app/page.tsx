@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
 import {
   SignedIn,
@@ -7,18 +7,12 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
 
 import { BrandLogo } from "@/components/BrandLogo";
 import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
 
 export default async function HomePage() {
-  const { userId } = await auth();
-  if (userId) {
-    redirect("/dashboard");
-  }
-
   return (
     <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
       <header className="relative z-10 border-b border-gray-800 px-6 py-4">
@@ -29,6 +23,14 @@ export default async function HomePage() {
           <div className="flex items-center gap-4">
             {/* Simple Nav */}
             <nav className="flex items-center gap-4 text-sm text-slate-400">
+              <SignedIn>
+                <Link
+                  href="/dashboard"
+                  className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  Dashboard
+                </Link>
+              </SignedIn>
               <a
                 href="/how-it-works"
                 className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"

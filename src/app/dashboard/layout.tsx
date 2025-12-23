@@ -23,16 +23,16 @@ export default async function DashboardLayout({
 
           <nav className="flex items-center gap-4 text-sm text-slate-300">
             <Link
+              href="/"
+              className="rounded px-2 py-1 text-slate-300 transition hover:bg-slate-900/60 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              Home
+            </Link>
+            <Link
               href="/dashboard"
               className="rounded px-2 py-1 text-slate-300 transition hover:bg-slate-900/60 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
             >
               Links
-            </Link>
-            <Link
-              href="/dashboard/settings"
-              className="rounded px-2 py-1 text-slate-300 transition hover:bg-slate-900/60 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
-            >
-              Settings
             </Link>
 
             <div className="ml-2">

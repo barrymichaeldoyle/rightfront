@@ -2,9 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 
-type CreateLinkState =
-  | { ok: false; error: string; permalink?: string; slug?: string }
-  | { ok: true; error?: string; permalink: string; slug: string };
+import type { CreateLinkState } from "@/lib/linkStates";
 
 const initialState: CreateLinkState = { ok: false, error: "" };
 

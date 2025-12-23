@@ -1,9 +1,8 @@
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { auth } from "@clerk/nextjs/server";
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { config } from "@/lib/config";
 import { db } from "@/lib/db";
@@ -33,31 +32,6 @@ export default async function DashboardHomePage() {
   const { userId } = await auth();
   if (!userId) {
     redirect("/");
-  }
-
-  async function deleteLink(formData: FormData) {
-    "use server";
-
-    const { userId: actionUserId } = await auth();
-    if (!actionUserId) {
-      redirect("/");
-    }
-
-    const id = String(formData.get("id") ?? "").trim();
-    if (!id) return;
-
-    try {
-      await db
-        .delete(userLinks)
-        .where(and(eq(userLinks.id, id), eq(userLinks.userId, actionUserId)));
-    } catch (err) {
-      // If prod DB isn't migrated yet, don't blow up the dashboard.
-      if (!isMissingUserLinksTable(err)) {
-        throw err;
-      }
-    }
-
-    revalidatePath("/dashboard");
   }
 
   const { links, dbNotInitialized } = await (async (): Promise<{
@@ -135,7 +109,6 @@ export default async function DashboardHomePage() {
       ) : (
         <DashboardLinksClient
           siteUrl={config.siteUrl}
-          deleteAction={deleteLink}
           links={links.map((l) => ({
             id: l.id,
             slug: l.slug,

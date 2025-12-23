@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
 
 type LinkRow = {
   id: string;
@@ -14,14 +15,11 @@ type LinkRow = {
 export function DashboardLinksClient({
   links,
   siteUrl,
-  deleteAction,
 }: {
   links: LinkRow[];
   siteUrl: string;
-  deleteAction: (formData: FormData) => Promise<void>;
 }) {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
 
   const rows = useMemo(() => links, [links]);
 
@@ -68,22 +66,12 @@ export function DashboardLinksClient({
                 {copiedSlug === link.slug ? "Copied" : "Copy"}
               </button>
 
-              <form
-                action={(formData) => {
-                  startTransition(async () => {
-                    await deleteAction(formData);
-                  });
-                }}
+              <Link
+                href={`/dashboard/links/${link.id}`}
+                className="cursor-pointer text-sm text-slate-300 underline-offset-4 hover:text-slate-100 hover:underline"
               >
-                <input type="hidden" name="id" value={link.id} />
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="cursor-pointer text-sm text-slate-400 transition hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  Delete
-                </button>
-              </form>
+                Manage
+              </Link>
             </div>
           </div>
         );

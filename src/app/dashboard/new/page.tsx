@@ -7,73 +7,11 @@ import { eq } from "drizzle-orm";
 import { NewLinkForm } from "@/app/dashboard/new/NewLinkForm";
 import { config } from "@/lib/config";
 import { db } from "@/lib/db";
+import { dbErrorToUserMessage } from "@/lib/dbErrors";
+import type { CreateLinkState } from "@/lib/linkStates";
 import { detectPlatform } from "@/lib/platform";
 import { userLinks } from "@/lib/schema";
-
-type CreateLinkState =
-  | { ok: false; error: string; permalink?: string; slug?: string }
-  | { ok: true; error?: string; permalink: string; slug: string };
-
-function normalizeSlug(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function isValidSlug(slug: string): boolean {
-  // 3-32 chars, lowercase letters/numbers, hyphen-separated tokens.
-  return (
-    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) &&
-    slug.length >= 3 &&
-    slug.length <= 32
-  );
-}
-
-function dbErrorToUserMessage(err: unknown, slug: string): string {
-  const e = err as { code?: string; message?: string; cause?: unknown };
-  const message = String(e?.message ?? "");
-  const causeMessage =
-    e?.cause && typeof e.cause === "object" && "message" in e.cause
-      ? String((e.cause as { message?: unknown }).message ?? "")
-      : "";
-  const combined = `${message}\n${causeMessage}`.toLowerCase();
-
-  // Postgres unique violation
-  if (
-    e?.code === "23505" ||
-    combined.includes("duplicate key value") ||
-    combined.includes("unique constraint") ||
-    combined.includes("user_links_slug_unique")
-  ) {
-    return `That slug is already taken: "${slug}". Try another (e.g. "${slug}-2").`;
-  }
-
-  // Missing table / migrations not applied
-  if (
-    e?.code === "42P01" ||
-    combined.includes('relation "user_links" does not exist') ||
-    combined.includes("does not exist") ||
-    combined.includes("undefined_table")
-  ) {
-    return "Your database isn't initialized yet (missing table `user_links`). Run your Drizzle migrations, then try again.";
-  }
-
-  // Connectivity / env issues
-  if (
-    combined.includes("fetch failed") ||
-    combined.includes("ecconn") ||
-    combined.includes("econn") ||
-    combined.includes("timeout") ||
-    combined.includes("could not parse the http request body")
-  ) {
-    return "Couldn’t reach the database. Double-check `DATABASE_URL` and that Neon is reachable, then try again.";
-  }
-
-  return "Could not create permalink due to a server error. Please try again in a moment.";
-}
+import { isValidSlug, normalizeSlug } from "@/lib/slug";
 
 export default function NewLinkPage() {
   async function createPermalink(
@@ -117,7 +55,10 @@ export default function NewLinkPage() {
         .where(eq(userLinks.slug, slug))
         .limit(1);
     } catch (err) {
-      return { ok: false, error: dbErrorToUserMessage(err, slug) };
+      return {
+        ok: false,
+        error: dbErrorToUserMessage(err, slug, "create_permalink"),
+      };
     }
 
     if (existing.length > 0) {
@@ -140,7 +81,7 @@ export default function NewLinkPage() {
       }
       return {
         ok: false,
-        error: dbErrorToUserMessage(err, slug),
+        error: dbErrorToUserMessage(err, slug, "create_permalink"),
       };
     }
 
