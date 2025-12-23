@@ -50,8 +50,25 @@ src/
 
 ---
 
-## 📈 Future Plans
+## 🧪 Seeding analytics data (dev)
 
-- Add analytics tracking for link clicks.
-- Support custom vanity links (`/r/myapp`).
-- Add dashboard with link management.
+If you want to test the per-link analytics UI locally, you can seed your dev database with fake links + events.
+
+1. Run migrations:
+
+```bash
+pnpm db:migrate
+```
+
+2. Seed (set `SEED_USER_ID` to **your Clerk userId**, so the dashboard can see the data):
+
+```bash
+SEED_USER_ID="user_..." pnpm db:seed
+```
+
+Optional knobs:
+
+- `SEED_LINKS` (default `3`)
+- `SEED_EVENTS_PER_LINK` (default `250`)
+- `SEED_DAYS` (default `30`)
+- `SEED_WIPE_USER=true` (delete existing data for that `SEED_USER_ID` first)

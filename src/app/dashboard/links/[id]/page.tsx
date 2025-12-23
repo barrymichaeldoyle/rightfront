@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,7 @@ import { userLinks } from "@/lib/schema";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 
 import { LinkAnalyticsPanel } from "./LinkAnalyticsPanel";
+import { LinkAnalyticsSkeleton } from "./LinkAnalyticsSkeleton";
 import { LinkSettingsForm } from "./LinkSettingsForm";
 
 export default async function LinkSettingsPage({
@@ -150,13 +152,16 @@ export default async function LinkSettingsPage({
         </Link>
       </div>
 
-      <div className="mt-8">
-        <LinkAnalyticsPanel
-          userId={userId}
-          linkId={link.id}
-          clicksCounter={link.clicks ?? 0}
-          range={rangeParam}
-        />
+      <div className="mb-6">
+        <Suspense fallback={<LinkAnalyticsSkeleton />}>
+          <LinkAnalyticsPanel
+            key={rangeParam ?? "30d"}
+            userId={userId}
+            linkId={link.id}
+            clicksCounter={link.clicks ?? 0}
+            range={rangeParam}
+          />
+        </Suspense>
       </div>
 
       <LinkSettingsForm

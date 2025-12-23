@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
+    "db:seed": "tsx src/scripts/seed-dev.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
