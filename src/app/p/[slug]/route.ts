@@ -59,6 +59,9 @@ export async function GET(
     // ignore
   }
 
-  const dest = new URL(`/link?id=${encodeURIComponent(row.appId)}`, req.url);
+  const dest = new URL(
+    `/link?id=${encodeURIComponent(row.appId)}&slug=${encodeURIComponent(slug)}`,
+    req.url,
+  );
   return Response.redirect(dest, 302);
 }

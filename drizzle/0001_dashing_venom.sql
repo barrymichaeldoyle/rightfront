@@ -1,0 +1,22 @@
+CREATE TABLE "link_events" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"link_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"app_id" text NOT NULL,
+	"ip_hash" text,
+	"country" text,
+	"region" text,
+	"city" text,
+	"user_agent" text,
+	"referrer" text,
+	"device_type" text,
+	"os" text,
+	"browser" text,
+	"platform_detected" text,
+	"routed_storefront" text,
+	"store_region" text,
+	"used_fallback" boolean DEFAULT false,
+	"fallback_reason" text,
+	"success" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now()
+);
