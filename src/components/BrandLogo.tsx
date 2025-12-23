@@ -24,7 +24,7 @@ export function BrandLogo({
   showBeta?: boolean;
 }) {
   return (
-    <h1 className="flex items-center text-2xl font-semibold tracking-tight">
+    <div className="flex items-center text-2xl font-semibold tracking-tight">
       <Link
         href={href}
         className="focus-visible:ring-2 focus-visible:ring-blue-400"
@@ -37,6 +37,6 @@ export function BrandLogo({
           beta
         </span>
       ) : null}
-    </h1>
+    </div>
   );
 }

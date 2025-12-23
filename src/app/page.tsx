@@ -7,10 +7,18 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
+import type { Metadata } from "next";
 
 import { BrandLogo } from "@/components/BrandLogo";
 import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
+
+export const metadata: Metadata = {
+  title: "RightFront — Smart App Store Links That Work Worldwide",
+  description:
+    "Create one geo-aware link for the App Store and Play Store that routes each user to the correct regional storefront. Stop losing installs to “Not Available” pages.",
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   return (
@@ -31,12 +39,12 @@ export default async function HomePage() {
                   Dashboard
                 </Link>
               </SignedIn>
-              <a
+              <Link
                 href="/how-it-works"
                 className="rounded transition-colors hover:text-slate-100 focus-visible:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400"
               >
                 How it works
-              </a>
+              </Link>
             </nav>
 
             <div className="hidden h-6 w-px bg-gray-800 sm:block" aria-hidden />
@@ -70,7 +78,7 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center justify-center px-6 py-16 text-center">
-        <h2 className="mb-4 leading-tight drop-shadow">
+        <h1 className="mb-4 leading-tight drop-shadow">
           <span className="mb-2 block text-xl font-semibold text-slate-100 md:text-2xl">
             Send users to the
           </span>
@@ -88,7 +96,7 @@ export default async function HomePage() {
           <span className="mt-6 block text-2xl font-semibold tracking-tight text-slate-100/90 md:text-3xl">
             Every time, in every country.
           </span>
-        </h2>
+        </h1>
         <p
           className="mt-6 mb-10 max-w-3xl text-lg text-slate-200/80"
           style={{ textWrap: "balance" }}

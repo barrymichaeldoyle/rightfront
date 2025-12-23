@@ -5,6 +5,8 @@ RightFront is a micro‑SaaS that provides **smart app store link redirection** 
 Users get a short link that automatically redirects visitors to the correct App Store or Play Store page **based on their location**.  
 If the app is unavailable in a country, RightFront shows a friendly fallback page instead of Apple's default “Not Available” page.
 
+**Live site:** [rightfront.app](https://rightfront.app)
+
 ---
 
 ## 🧱 Tech Stack
@@ -45,7 +47,7 @@ src/
 ## 🤖 Crawling & Indexing (pre-beta)
 
 - Sitemap + robots are generated automatically on build via `next-sitemap`.
-- Set **`NEXT_PUBLIC_SITE_URL`** (recommended) or **`SITE_URL`** in your deployment environment so generated URLs are correct.
+- Set **`NEXT_PUBLIC_SITE_URL`** (recommended) or **`SITE_URL`** in your deployment environment so generated URLs are correct (e.g. `https://rightfront.app`).
 - The `/link` redirect route sends `X-Robots-Tag: noindex` to avoid being indexed (prevents duplicate crawl).
 
 ---

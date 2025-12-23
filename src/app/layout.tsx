@@ -42,18 +42,16 @@ export const metadata: Metadata = {
     "storefront redirect",
     "global app distribution",
   ],
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     siteName: "RightFront",
     title: "RightFront — Geo‑Aware App Store & Play Store Links",
     description:
       "RightFront automatically routes users to the correct App Store or Play Store for their country—so you stop losing installs to Not Available pages.",
+    url: "https://rightfront.app",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "RightFront — Geo‑Aware App Store & Play Store Links",
     description:
       "Automatically route users to the correct App Store or Play Store storefront worldwide with RightFront.",

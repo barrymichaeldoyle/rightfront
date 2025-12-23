@@ -255,14 +255,14 @@ export function FallbackClient() {
               isAvailableInDetectedStorefront ? (
                 <>
                   Since the app is available in{" "}
-                  <InlineStorefront code={detectedStorefront} />, , it will
+                  <InlineStorefront code={detectedStorefront} />, it will
                   redirect straight to the store page (and won&apos;t show this
                   fallback page).
                 </>
               ) : (
                 <>
                   Since the app is <span className="font-semibold">not</span>{" "}
-                  available in <InlineStorefront code={detectedStorefront} />, ,
+                  available in <InlineStorefront code={detectedStorefront} />,
                   it will redirect to this fallback page instead.
                 </>
               )
@@ -291,7 +291,7 @@ export function FallbackClient() {
                   <>
                     {" "}
                     — simulating{" "}
-                    <InlineStorefront code={selectedStorefront ?? ""} />. .
+                    <InlineStorefront code={selectedStorefront ?? ""} />.
                   </>
                 ) : (
                   "."
