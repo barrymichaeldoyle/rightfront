@@ -6,6 +6,22 @@ import type { UpdateLinkState } from "@/lib/linkStates";
 
 const initialState: UpdateLinkState = { ok: false, error: "" };
 
+function CopyIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+    >
+      <path
+        fill="currentColor"
+        d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16h-9V7h9v14Z"
+      />
+    </svg>
+  );
+}
+
 export function LinkSettingsForm({
   linkId,
   initialSlug,
@@ -31,16 +47,64 @@ export function LinkSettingsForm({
   });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeleting, startDeleting] = useTransition();
+  const [copied, setCopied] = useState(false);
 
   const permalink = useMemo(() => {
     if (state.ok) return state.permalink;
     return `${siteUrl}/p/${initialSlug}`;
   }, [initialSlug, siteUrl, state]);
 
+  async function copyPermalink() {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(permalink);
+      } else {
+        const el = document.createElement("textarea");
+        el.value = permalink;
+        el.setAttribute("readonly", "true");
+        el.style.position = "fixed";
+        el.style.top = "0";
+        el.style.left = "0";
+        el.style.opacity = "0";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // ignore
+    }
+  }
+
   return (
     <div className="grid gap-6">
       <div className="rounded-2xl border border-slate-800 bg-slate-900/20 p-5">
-        <p className="text-sm font-semibold text-slate-100">Permalink</p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-slate-100">Permalink</p>
+
+          <span className="group/copy relative inline-flex">
+            <button
+              type="button"
+              onClick={copyPermalink}
+              aria-label="Copy permalink"
+              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-slate-700/80 bg-slate-950/40 text-slate-200 transition hover:bg-slate-900/40 hover:text-slate-50 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            >
+              <CopyIcon className="h-4 w-4" />
+            </button>
+            <span
+              className={`pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] rounded bg-slate-950 px-2 py-1 text-xs font-medium whitespace-nowrap text-slate-100 shadow-lg ring-1 ring-slate-800 transition-opacity ${
+                copied
+                  ? "opacity-100"
+                  : "opacity-0 group-hover/copy:opacity-100"
+              }`}
+            >
+              {copied ? "Copied!" : "Copy link"}
+            </span>
+          </span>
+        </div>
+
         <a
           href={permalink}
           className="mt-2 block truncate rounded-md border border-slate-700 bg-slate-950/40 px-3 py-2 font-mono text-sm text-sky-300 underline-offset-4 hover:underline"
