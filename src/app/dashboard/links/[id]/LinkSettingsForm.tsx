@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useState, useTransition } from "react";
 
+import { features } from "@/lib/features";
 import type { UpdateLinkState } from "@/lib/linkStates";
 
 const initialState: UpdateLinkState = { ok: false, error: "" };
@@ -42,6 +43,7 @@ export function LinkSettingsForm({
   ) => Promise<UpdateLinkState>;
   deleteAction: (formData: FormData) => Promise<void>;
 }) {
+  const androidEnabled = features.androidEnabled;
   const [state, formAction, isPending] = useActionState(updateAction, {
     ...initialState,
   });
@@ -111,10 +113,16 @@ export function LinkSettingsForm({
         >
           {permalink}
         </a>
-        <p className="mt-2 text-xs text-slate-400">
-          Platform:{" "}
-          <span className="font-mono text-slate-300">{initialPlatform}</span>
-        </p>
+        {androidEnabled ? (
+          <p className="mt-2 text-xs text-slate-400">
+            Platform:{" "}
+            <span className="font-mono text-slate-300">{initialPlatform}</span>
+          </p>
+        ) : initialPlatform === "ios" ? (
+          <p className="mt-2 text-xs text-slate-400">
+            Platform: <span className="font-mono text-slate-300">iOS</span>
+          </p>
+        ) : null}
       </div>
 
       <form
@@ -133,8 +141,13 @@ export function LinkSettingsForm({
               className="mt-2 w-full rounded-md border border-slate-700 bg-slate-950/40 p-2 font-mono text-slate-100 placeholder:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             />
             <p className="mt-2 text-xs text-slate-400">
-              iOS: <span className="font-mono">id123…</span> • Android:{" "}
-              <span className="font-mono">com.example.app</span>
+              iOS: <span className="font-mono">id123…</span>
+              {androidEnabled ? (
+                <>
+                  {" "}
+                  • Android: <span className="font-mono">com.example.app</span>
+                </>
+              ) : null}
             </p>
           </div>
 

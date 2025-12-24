@@ -2,16 +2,18 @@ import Link from "next/link";
 
 import { BrandMark } from "@/components/BrandLogo";
 import { config } from "@/lib/config";
+import { features } from "@/lib/features";
 
 import { AnchorHeading } from "./AnchorHeading";
 
 export const metadata = {
   title: "How RightFront Works — Geo-Aware App Store Links",
   description:
-    "Learn how RightFront fixes Apple App Store country issues and routes users to the correct App Store or Play Store storefront automatically.",
+    "Learn how RightFront fixes Apple App Store country issues and routes users to the correct App Store storefront automatically.",
 };
 
 export default function HowItWorksPage() {
+  const androidEnabled = features.androidEnabled;
   return (
     <main className="mx-auto max-w-4xl px-6 py-16 text-slate-100">
       <header className="mb-10 flex items-center justify-between">
@@ -34,9 +36,10 @@ export default function HowItWorksPage() {
           There is no truly universal app store link.
         </p>
         <p className="mb-4 text-slate-300">
-          When someone clicks a standard App Store or Play Store link, the store
-          may open in the wrong country, show a “Not Available in Your Region”
-          message, or display the wrong storefront language.
+          When someone clicks a standard{" "}
+          {androidEnabled ? "App Store or Play Store" : "App Store"} link, the
+          store may open in the wrong country, show a “Not Available in Your
+          Region” message, or display the wrong storefront language.
         </p>
         <p className="text-slate-300">
           This is especially common when sharing links internationally or
@@ -78,20 +81,22 @@ export default function HowItWorksPage() {
         </ul>
       </section>
 
-      <section className="mb-12">
-        <AnchorHeading id="google-play">
-          What about Google Play Store?
-        </AnchorHeading>
-        <p className="mb-4 text-slate-300">
-          Google Play generally handles localization better than Apple and often
-          auto-detects country and language.
-        </p>
-        <p className="text-slate-300">
-          <BrandMark /> includes Play Store support as a best-effort
-          enhancement. Actual localization depends on Google account settings,
-          regional availability, and store behavior.
-        </p>
-      </section>
+      {androidEnabled ? (
+        <section className="mb-12">
+          <AnchorHeading id="google-play">
+            What about Google Play Store?
+          </AnchorHeading>
+          <p className="mb-4 text-slate-300">
+            Google Play generally handles localization better than Apple and
+            often auto-detects country and language.
+          </p>
+          <p className="text-slate-300">
+            <BrandMark /> includes Play Store support as a best-effort
+            enhancement. Actual localization depends on Google account settings,
+            regional availability, and store behavior.
+          </p>
+        </section>
+      ) : null}
 
       <section className="mb-12">
         <AnchorHeading id="what-it-does">
@@ -101,7 +106,9 @@ export default function HowItWorksPage() {
           <li>Detects user country automatically</li>
           <li>Routes users to the correct store front</li>
           <li>Works without SDKs or deep linking</li>
-          <li>Supports Apple App Store and Google Play</li>
+          <li>
+            Supports Apple App Store{androidEnabled ? " and Google Play" : ""}
+          </li>
           <li>Does not bypass store restrictions</li>
           <li>Does not change app availability</li>
           <li>Does not require user accounts</li>

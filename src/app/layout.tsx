@@ -6,6 +6,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 
+import { features } from "@/lib/features";
+
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -18,17 +20,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const androidEnabled = features.androidEnabled;
+
 export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
   },
   metadataBase: new URL("https://rightfront.app"),
   title: {
-    default: "RightFront — Geo-Aware App Store & Play Store Links",
+    default: "RightFront — Geo-Aware App Store Links",
     template: "%s — RightFront • Smart App Store Links",
   },
   description:
-    "Geo‑aware App Store and Play Store links that automatically route users to the correct regional storefront—so you never lose installs to “Not Available” pages again.",
+    "Geo‑aware App Store links that automatically route users to the correct regional storefront—so you never lose installs to “Not Available” pages again.",
   applicationName: "RightFront",
   keywords: [
     "app store link",
@@ -45,16 +49,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "RightFront",
-    title: "RightFront — Geo‑Aware App Store & Play Store Links",
+    title: "RightFront — Geo‑Aware App Store Links",
     description:
-      "RightFront automatically routes users to the correct App Store or Play Store for their country—so you stop losing installs to Not Available pages.",
+      "RightFront automatically routes users to the correct App Store for their country—so you stop losing installs to Not Available pages.",
     url: "https://rightfront.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RightFront — Geo‑Aware App Store & Play Store Links",
+    title: "RightFront — Geo‑Aware App Store Links",
     description:
-      "Automatically route users to the correct App Store or Play Store storefront worldwide with RightFront.",
+      "Automatically route users to the correct App Store storefront worldwide with RightFront.",
   },
   robots: {
     index: true,
@@ -80,7 +84,7 @@ const structuredData = {
     priceCurrency: "USD",
   },
   description:
-    "Geo-aware links that route users to the correct App Store or Play Store automatically.",
+    "Geo-aware links that route users to the correct App Store automatically.",
   url: "https://rightfront.app",
 } as const;
 

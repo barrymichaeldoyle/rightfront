@@ -3,18 +3,18 @@
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+import { features } from "@/lib/features";
 import { detectPlatform, Platform } from "@/lib/platform";
 
-const EXAMPLE_APPS = [
-  { id: "id324684580", label: "iOS example (Spotify)" },
-  { id: "com.spotify.music", label: "Android example (Spotify)" },
-];
+const EXAMPLE_APPS = [{ id: "id324684580" }];
+const ANDROID_EXAMPLE_APP = { id: "com.spotify.music" };
 
 export function HomeForm() {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [appId, setAppId] = useState("");
   const [isPending, startTransition] = useTransition();
+  const androidEnabled = features.androidEnabled;
 
   const detectedPlatform = useMemo<Platform | null>(() => {
     if (!appId.trim()) {
@@ -23,7 +23,10 @@ export function HomeForm() {
     return detectPlatform(appId.trim());
   }, [appId]);
 
-  const isValid = detectedPlatform !== null && appId.trim().length > 0;
+  const isValid =
+    detectedPlatform !== null &&
+    appId.trim().length > 0 &&
+    (androidEnabled ? true : detectedPlatform === "ios");
   const isDisabled = !isValid || isPending;
 
   function handleSubmit(e: FormEvent) {
@@ -40,6 +43,7 @@ export function HomeForm() {
   async function handleCopy() {
     const id = appId.trim();
     if (!id || !detectedPlatform) return;
+    if (!androidEnabled && detectedPlatform !== "ios") return;
 
     const url = `${window.location.origin}/link?id=${encodeURIComponent(id)}`;
 
@@ -64,11 +68,13 @@ export function HomeForm() {
             detectedPlatform === "ios"
               ? "bg-blue-500/20 text-blue-400"
               : detectedPlatform === "android"
-                ? "bg-green-500/20 text-green-400"
+                ? androidEnabled
+                  ? "bg-green-500/20 text-green-400"
+                  : "invisible"
                 : "invisible"
           }`}
         >
-          {detectedPlatform === "ios" ? "iOS" : "Android"}
+          {detectedPlatform === "ios" ? "iOS" : androidEnabled ? "Android" : ""}
         </span>
       </div>
 
@@ -77,14 +83,21 @@ export function HomeForm() {
         type="text"
         value={appId}
         onChange={(e) => setAppId(e.target.value.trimStart())}
-        placeholder="e.g., id324684580 or com.spotify.music"
+        placeholder={
+          androidEnabled
+            ? "e.g., id324684580 or com.spotify.music"
+            : "e.g., id324684580"
+        }
         className="mt-1 mb-6 w-full rounded-md border border-slate-700 bg-transparent p-2 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/80 focus:outline-none"
         required
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-slate-400">
         <span className="opacity-70">Try:</span>
-        {EXAMPLE_APPS.map((example) => (
+        {[
+          ...EXAMPLE_APPS,
+          ...(androidEnabled ? [ANDROID_EXAMPLE_APP] : []),
+        ].map((example) => (
           <button
             key={example.id}
             type="button"

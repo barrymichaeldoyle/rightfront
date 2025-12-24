@@ -8,6 +8,7 @@ import { and, eq } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { db } from "@/lib/db";
 import { dbErrorToUserMessage } from "@/lib/dbErrors";
+import { features } from "@/lib/features";
 import type { UpdateLinkState } from "@/lib/linkStates";
 import { detectPlatform } from "@/lib/platform";
 import { userLinks } from "@/lib/schema";
@@ -75,11 +76,12 @@ export default async function LinkSettingsPage({
     const rawSlug = String(formData.get("slug") ?? "").trim();
 
     const platform = detectPlatform(rawAppId);
-    if (!platform) {
+    if (!platform || (!features.androidEnabled && platform !== "ios")) {
       return {
         ok: false,
-        error:
-          "Please enter a valid App ID (iOS: id123… or Android: com.example.app).",
+        error: features.androidEnabled
+          ? "Please enter a valid App ID (iOS: id123… or Android: com.example.app)."
+          : "Please enter a valid iOS App Store ID (it should look like id284882215).",
       };
     }
 

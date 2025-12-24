@@ -12,15 +12,17 @@ import type { Metadata } from "next";
 import { BrandLogo } from "@/components/BrandLogo";
 import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
+import { features } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "RightFront — Smart App Store Links That Work Worldwide",
   description:
-    "Create one geo-aware link for the App Store and Play Store that routes each user to the correct regional storefront. Stop losing installs to “Not Available” pages.",
+    "Create one geo-aware link for the App Store that routes each user to the correct regional storefront. Stop losing installs to “Not Available” pages.",
   alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {
+  const androidEnabled = features.androidEnabled;
   return (
     <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
       <header className="relative z-10 border-b border-gray-800 px-6 py-4">
@@ -102,18 +104,20 @@ export default async function HomePage() {
           style={{ textWrap: "balance" }}
         >
           A geo-aware link that routes each user to the correct{" "}
-          <span className="font-semibold text-slate-100">App Store</span> or{" "}
-          <span className="font-semibold text-slate-100">Play Store</span> for
-          their country or region whenever supported. Stop losing installs to{" "}
-          <span className="font-semibold text-sky-200">“Not Available”</span>{" "}
+          <span className="font-semibold text-slate-100">App Store</span>
+          {androidEnabled ? (
+            <>
+              {" "}
+              or{" "}
+              <span className="font-semibold text-slate-100">Play Store</span>
+            </>
+          ) : null}{" "}
+          for their country or region whenever supported. Stop losing installs
+          to <span className="font-semibold text-sky-200">“Not Available”</span>{" "}
           pages.
         </p>
 
         <HomeForm />
-        <p className="mt-4 max-w-md text-center text-xs text-slate-400/80">
-          Play Store localization depends on Google account, region, and
-          availability.
-        </p>
 
         <SignedOut>
           <div className="my-10 w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/30 p-5 text-left">
