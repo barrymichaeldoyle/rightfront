@@ -1,8 +1,10 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
+import { CopyIcon } from "@/components/icons/CopyIcon";
+import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
+import { Button } from "@/components/ui/Button";
 import { features } from "@/lib/features";
 import { detectPlatform, Platform } from "@/lib/platform";
 
@@ -10,10 +12,9 @@ const EXAMPLE_APPS = [{ id: "id324684580" }];
 const ANDROID_EXAMPLE_APP = { id: "com.spotify.music" };
 
 export function HomeForm() {
-  const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [appId, setAppId] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [isOpening, setIsOpening] = useState(false);
   const androidEnabled = features.androidEnabled;
 
   const detectedPlatform = useMemo<Platform | null>(() => {
@@ -27,18 +28,13 @@ export function HomeForm() {
     detectedPlatform !== null &&
     appId.trim().length > 0 &&
     (androidEnabled ? true : detectedPlatform === "ios");
-  const isDisabled = !isValid || isPending;
+  const isDisabled = !isValid || isOpening;
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (isDisabled) {
-      return;
-    }
+  const storefrontHref = useMemo(() => {
+    if (!isValid) return null;
     const id = appId.trim();
-    startTransition(() => {
-      router.push(`/link?id=${encodeURIComponent(id)}`);
-    });
-  }
+    return `/link?id=${encodeURIComponent(id)}`;
+  }, [appId, isValid]);
 
   async function handleCopy() {
     const id = appId.trim();
@@ -56,25 +52,41 @@ export function HomeForm() {
     }
   }
 
+  const badgeText =
+    detectedPlatform === "ios"
+      ? "iOS"
+      : detectedPlatform === "android" && androidEnabled
+        ? "Android"
+        : "";
+  const badgePlaceholder = androidEnabled ? "Android" : "iOS";
+  const showBadge = badgeText.length > 0;
+
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!storefrontHref || isDisabled) return;
+        try {
+          setIsOpening(true);
+          window.open(storefrontHref, "_blank", "noopener,noreferrer");
+        } finally {
+          window.setTimeout(() => setIsOpening(false), 1200);
+        }
+      }}
       className="w-full max-w-md rounded-xl border border-slate-700/80 bg-slate-900 px-6 py-6 shadow-xl shadow-black/20 transition-shadow hover:shadow-2xl"
     >
       <div className="mb-1 flex items-center justify-between">
         <label className="text-sm font-medium text-gray-300">App ID</label>
         <span
-          className={`rounded px-2 py-1 text-xs font-semibold ${
-            detectedPlatform === "ios"
+          className={`inline-flex h-6 items-center rounded px-2 text-xs leading-none font-semibold transition-opacity ${
+            showBadge ? "opacity-100" : "opacity-0"
+          } ${
+            badgeText === "iOS"
               ? "bg-blue-500/20 text-blue-400"
-              : detectedPlatform === "android"
-                ? androidEnabled
-                  ? "bg-green-500/20 text-green-400"
-                  : "invisible"
-                : "invisible"
+              : "bg-green-500/20 text-green-400"
           }`}
         >
-          {detectedPlatform === "ios" ? "iOS" : androidEnabled ? "Android" : ""}
+          {showBadge ? badgeText : badgePlaceholder}
         </span>
       </div>
 
@@ -98,51 +110,46 @@ export function HomeForm() {
           ...EXAMPLE_APPS,
           ...(androidEnabled ? [ANDROID_EXAMPLE_APP] : []),
         ].map((example) => (
-          <button
+          <Button
             key={example.id}
             type="button"
             onClick={() => setAppId(example.id)}
-            className="rounded-md border border-slate-700 px-2 py-1 font-mono text-slate-300 transition-colors hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            variant="outline"
+            size="xs"
+            className="font-mono text-slate-300 hover:text-slate-100"
           >
             {example.id}
-          </button>
+          </Button>
         ))}
       </div>
 
-      <button
-        type="submit"
-        disabled={isDisabled}
-        aria-busy={isPending}
-        className={`h-10 w-full rounded-md py-2 font-medium transition-all duration-200 ${
-          !isDisabled
-            ? "cursor-pointer bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/30 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:outline-none active:translate-y-px"
-            : "cursor-not-allowed bg-slate-700 text-slate-400"
-        }`}
-      >
-        <span className="inline-flex items-center justify-center gap-2">
-          {/* Reserve space for the spinner to avoid subtle layout shift on click */}
-          <span
-            className={`h-4 w-4 rounded-full border-2 border-white/30 border-t-white ${
-              isPending ? "animate-spin opacity-100" : "opacity-0"
-            }`}
-            aria-hidden="true"
-          />
-          <span>{isPending ? "Redirecting…" : "Go to Storefront"}</span>
-        </span>
-      </button>
+      <div className="flex flex-col gap-2">
+        <Button
+          type="submit"
+          disabled={isDisabled}
+          aria-busy={isOpening}
+          fullWidth
+          loading={isOpening}
+          withSpinner
+          variant={!isDisabled ? "primary" : "secondary"}
+        >
+          <span className="inline-flex items-center justify-center gap-2">
+            <span>{isOpening ? "Opening…" : "Go to Storefront"}</span>
+            <ExternalLinkIcon className="h-4 w-4" />
+          </span>
+        </Button>
 
-      <button
-        type="button"
-        onClick={handleCopy}
-        disabled={!isValid}
-        className={`mt-3 w-full rounded-md border border-slate-700 py-2 text-sm font-medium transition-colors ${
-          isValid
-            ? "cursor-pointer text-slate-200 hover:border-blue-500/60 hover:bg-blue-500/10"
-            : "cursor-not-allowed text-slate-500"
-        }`}
-      >
-        {copied ? "Link copied ✓" : "Copy link"}
-      </button>
+        <Button
+          type="button"
+          onClick={handleCopy}
+          disabled={!isValid}
+          fullWidth
+          variant="outline"
+        >
+          {copied ? "Link copied" : "Copy link"}
+          <CopyIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </form>
   );
 }

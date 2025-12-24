@@ -7,6 +7,25 @@
   }
 }
 
+@layer utilities {
+  @keyframes gradient-shine {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient-shine {
+    background-size: 200% 200%;
+    animation: gradient-shine 8s ease-in-out infinite;
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Clerk UI hard overrides (avoid Tailwind-content + specificity pitfalls)     */
 /* -------------------------------------------------------------------------- */

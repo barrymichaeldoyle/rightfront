@@ -2,26 +2,12 @@
 
 import { useActionState, useMemo, useState, useTransition } from "react";
 
+import { CopyIcon } from "@/components/icons/CopyIcon";
+import { Button } from "@/components/ui/Button";
 import { features } from "@/lib/features";
 import type { UpdateLinkState } from "@/lib/linkStates";
 
 const initialState: UpdateLinkState = { ok: false, error: "" };
-
-function CopyIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-      className={className}
-    >
-      <path
-        fill="currentColor"
-        d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16h-9V7h9v14Z"
-      />
-    </svg>
-  );
-}
 
 export function LinkSettingsForm({
   linkId,
@@ -87,14 +73,16 @@ export function LinkSettingsForm({
           <p className="text-sm font-semibold text-slate-100">Permalink</p>
 
           <span className="group/copy relative inline-flex">
-            <button
+            <Button
               type="button"
               onClick={copyPermalink}
               aria-label="Copy permalink"
-              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-slate-700/80 bg-slate-950/40 text-slate-200 transition hover:bg-slate-900/40 hover:text-slate-50 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+              variant="ghost"
+              size="iconSm"
+              className="bg-slate-950/40 text-slate-200 hover:bg-slate-900/40 hover:text-slate-50"
             >
               <CopyIcon className="h-4 w-4" />
-            </button>
+            </Button>
             <span
               className={`pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] rounded bg-slate-950 px-2 py-1 text-xs font-medium whitespace-nowrap text-slate-100 shadow-lg ring-1 ring-slate-800 transition-opacity ${
                 copied
@@ -176,13 +164,14 @@ export function LinkSettingsForm({
         ) : null}
 
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <button
+          <Button
             type="submit"
             disabled={isPending}
-            className="rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
+            variant="primary"
+            loading={isPending}
           >
             {isPending ? "Saving…" : "Save changes"}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -212,13 +201,14 @@ export function LinkSettingsForm({
             }}
           >
             <input type="hidden" name="id" value={linkId} />
-            <button
+            <Button
               type="submit"
               disabled={!confirmDelete || isDeleting}
-              className="cursor-pointer rounded-md border border-red-300/30 bg-red-950 px-4 py-2 text-sm font-semibold text-red-100 transition hover:brightness-120 focus-visible:ring-2 focus-visible:ring-red-300 disabled:cursor-not-allowed disabled:opacity-60"
+              variant="danger"
+              loading={isDeleting}
             >
               {isDeleting ? "Deleting…" : "Delete link"}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

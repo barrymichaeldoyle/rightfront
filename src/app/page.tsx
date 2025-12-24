@@ -12,12 +12,13 @@ import type { Metadata } from "next";
 import { BrandLogo } from "@/components/BrandLogo";
 import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
+import { Button } from "@/components/ui/Button";
 import { features } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "RightFront — Smart App Store Links That Work Worldwide",
   description:
-    "Create one geo-aware link for the App Store that routes each user to the correct regional storefront. Stop losing installs to “Not Available” pages.",
+    "Create one geo-aware App Store link that routes each user to the correct regional storefront worldwide. Stop losing installs to “Not Available” pages.",
   alternates: { canonical: "/" },
 };
 
@@ -25,13 +26,13 @@ export default async function HomePage() {
   const androidEnabled = features.androidEnabled;
   return (
     <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
-      <header className="relative z-10 border-b border-gray-800 px-6 py-4">
+      <header className="relative z-10 border-b border-slate-800/80 bg-slate-950/80 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between">
           {/* Logo */}
           <BrandLogo href="/" />
 
           <div className="flex items-center gap-4">
-            {/* Simple Nav */}
+            {/* Nav */}
             <nav className="flex items-center gap-4 text-sm text-slate-400">
               <SignedIn>
                 <Link
@@ -49,27 +50,25 @@ export default async function HomePage() {
               </Link>
             </nav>
 
-            <div className="hidden h-6 w-px bg-gray-800 sm:block" aria-hidden />
+            <div
+              className="hidden h-6 w-px bg-slate-800/80 sm:block"
+              aria-hidden
+            />
 
             <div className="flex items-center gap-2">
               <SignedOut>
                 <SignInButton>
-                  <button
-                    type="button"
-                    className="cursor-pointer rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
-                  >
+                  <Button type="button" variant="secondary" size="sm">
                     Sign in
-                  </button>
+                  </Button>
                 </SignInButton>
                 <SignUpButton>
-                  <button
-                    type="button"
-                    className="cursor-pointer rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
-                  >
+                  <Button type="button" variant="primary" size="sm">
                     Sign up
-                  </button>
+                  </Button>
                 </SignUpButton>
               </SignedOut>
+
               <SignedIn>
                 <UserButton />
               </SignedIn>
@@ -83,24 +82,22 @@ export default async function HomePage() {
         <h1 className="mb-4 leading-tight drop-shadow">
           <span className="mb-2 block text-xl font-semibold text-slate-100 md:text-2xl">
             Send users to the
-          </span>
-
+          </span>{" "}
           <span className="block text-6xl font-extrabold tracking-tight md:text-7xl">
-            <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+            <span className="animate-gradient-shine bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
               Right
             </span>{" "}
             <span className="font-bold text-slate-100">App Store</span>
-            <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+            <span className="animate-gradient-shine bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
               Front
             </span>
-          </span>
-
+          </span>{" "}
           <span className="mt-6 block text-2xl font-semibold tracking-tight text-slate-100/90 md:text-3xl">
             Every time, in every country.
           </span>
         </h1>
         <p
-          className="mt-6 mb-10 max-w-3xl text-lg text-slate-200/80"
+          className="mt-6 mb-10 max-w-3xl text-lg text-slate-300/90"
           style={{ textWrap: "balance" }}
         >
           A geo-aware link that routes each user to the correct{" "}
@@ -113,14 +110,14 @@ export default async function HomePage() {
             </>
           ) : null}{" "}
           for their country or region whenever supported. Stop losing installs
-          to <span className="font-semibold text-sky-200">“Not Available”</span>{" "}
+          to <span className="font-semibold text-sky-300">“Not Available”</span>{" "}
           pages.
         </p>
 
         <HomeForm />
 
         <SignedOut>
-          <div className="my-10 w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/30 p-5 text-left">
+          <div className="my-10 w-full max-w-2xl rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 text-left shadow-xl shadow-slate-900/40 backdrop-blur-sm">
             <div className="flex flex-col items-center justify-between gap-4">
               <div className="w-full max-w-xl">
                 <p className="text-sm font-semibold text-slate-100">
@@ -144,20 +141,24 @@ export default async function HomePage() {
               </div>
               <div className="flex w-full max-w-xl flex-1 flex-col gap-2 sm:flex-row">
                 <SignUpButton>
-                  <button
+                  <Button
                     type="button"
-                    className="flex-1 cursor-pointer rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    variant="primary"
+                    size="md"
+                    className="flex-1"
                   >
                     Sign up to generate permalinks
-                  </button>
+                  </Button>
                 </SignUpButton>
                 <SignInButton>
-                  <button
+                  <Button
                     type="button"
-                    className="flex-1 cursor-pointer rounded-md border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
+                    variant="secondary"
+                    size="md"
+                    className="flex-1"
                   >
                     Sign in
-                  </button>
+                  </Button>
                 </SignInButton>
               </div>
             </div>
@@ -168,7 +169,7 @@ export default async function HomePage() {
       <FallbackDemo />
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-800 py-6 text-center text-sm text-slate-400">
+      <footer className="relative z-10 border-t border-slate-800/80 bg-slate-950/80 py-6 text-center text-sm text-slate-400 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
         <p className="leading-relaxed">
           <span className="opacity-80">© {new Date().getFullYear()} </span>
           <span className="font-semibold tracking-tight">
@@ -186,6 +187,14 @@ export default async function HomePage() {
             {" "}
             — geo-aware store links that land right, every time.
           </span>
+        </p>
+        <p className="mt-2 text-xs text-slate-500">
+          <Link
+            href="/privacy"
+            className="underline underline-offset-4 hover:text-slate-200"
+          >
+            Privacy Policy
+          </Link>
         </p>
       </footer>
     </main>

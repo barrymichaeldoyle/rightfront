@@ -3,18 +3,20 @@ import "server-only";
 import * as FLAG_BY_CC from "country-flag-icons/react/3x2";
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 
+import { Button } from "@/components/ui/Button";
 import { db } from "@/lib/db";
 import { linkEvents } from "@/lib/schema";
 
+import { ClicksLineChartClient } from "./ClicksLineChartClient";
 import { RangeToggle } from "./RangeToggle";
 
-type RangeKey = "7d" | "30d" | "90d" | "all";
+type RangeKey = "24h" | "7d" | "30d";
 
 function parseRange(input: string | undefined): RangeKey {
-  if (input === "7d" || input === "30d" || input === "90d" || input === "all") {
+  if (input === "24h" || input === "7d" || input === "30d") {
     return input;
   }
-  return "30d";
+  return "7d";
 }
 
 function startOfDayUTC(d: Date): Date {
@@ -23,10 +25,28 @@ function startOfDayUTC(d: Date): Date {
   );
 }
 
+function startOfHourUTC(d: Date): Date {
+  return new Date(
+    Date.UTC(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate(),
+      d.getUTCHours(),
+    ),
+  );
+}
+
 function daysAgoUtc(days: number): Date {
   const now = new Date();
   const start = startOfDayUTC(now);
   start.setUTCDate(start.getUTCDate() - days);
+  return start;
+}
+
+function hoursAgoUtc(hours: number): Date {
+  const now = new Date();
+  const start = startOfHourUTC(now);
+  start.setUTCHours(start.getUTCHours() - hours);
   return start;
 }
 
@@ -163,13 +183,11 @@ export async function LinkAnalyticsPanel({
 }) {
   const range = parseRange(rangeInput);
   const fromDate =
-    range === "all"
-      ? null
+    range === "24h"
+      ? hoursAgoUtc(24)
       : range === "7d"
         ? daysAgoUtc(7)
-        : range === "90d"
-          ? daysAgoUtc(90)
-          : daysAgoUtc(30);
+        : daysAgoUtc(30);
 
   const whereBase = and(
     eq(linkEvents.userId, userId),
@@ -179,9 +197,10 @@ export async function LinkAnalyticsPanel({
     ? and(whereBase, gte(linkEvents.createdAt, fromDate))
     : whereBase;
 
-  const daysForChart =
-    range === "7d" ? 7 : range === "90d" ? 90 : range === "all" ? 30 : 30;
-  const chartFrom = daysAgoUtc(daysForChart);
+  const chartMode = range === "24h" ? "hour" : "day";
+  const pointsForChart = range === "24h" ? 24 : range === "7d" ? 7 : 30;
+  const chartFrom =
+    range === "24h" ? hoursAgoUtc(24) : daysAgoUtc(pointsForChart);
 
   try {
     const [
@@ -191,7 +210,7 @@ export async function LinkAnalyticsPanel({
       topDeviceTypes,
       topOs,
       topBrowsers,
-      dailyRows,
+      chartRows,
     ] = await Promise.all([
       db
         .select({
@@ -256,13 +275,24 @@ export async function LinkAnalyticsPanel({
         .limit(6),
       db
         .select({
-          day: sql<Date>`date_trunc('day', ${linkEvents.createdAt})`,
+          bucket:
+            chartMode === "hour"
+              ? sql<Date>`date_trunc('hour', ${linkEvents.createdAt})`
+              : sql<Date>`date_trunc('day', ${linkEvents.createdAt})`,
           count: sql<number>`count(*)`,
         })
         .from(linkEvents)
         .where(and(whereBase, gte(linkEvents.createdAt, chartFrom)))
-        .groupBy(sql`date_trunc('day', ${linkEvents.createdAt})`)
-        .orderBy(sql`date_trunc('day', ${linkEvents.createdAt})`),
+        .groupBy(
+          chartMode === "hour"
+            ? sql`date_trunc('hour', ${linkEvents.createdAt})`
+            : sql`date_trunc('day', ${linkEvents.createdAt})`,
+        )
+        .orderBy(
+          chartMode === "hour"
+            ? sql`date_trunc('hour', ${linkEvents.createdAt})`
+            : sql`date_trunc('day', ${linkEvents.createdAt})`,
+        ),
     ]);
 
     const total = toNum(totalsRow?.total);
@@ -287,27 +317,51 @@ export async function LinkAnalyticsPanel({
       .sort((a, b) => b.count - a.count)
       .slice(0, 6);
 
-    const dailyMap = new Map<string, number>();
-    for (const row of dailyRows) {
-      const key = startOfDayUTC(new Date(row.day)).toISOString().slice(0, 10);
-      dailyMap.set(key, toNum(row.count));
+    const chartMap = new Map<string, number>();
+    for (const row of chartRows) {
+      if (chartMode === "hour") {
+        const d = startOfHourUTC(new Date(row.bucket));
+        const key = d.toISOString().slice(0, 13); // YYYY-MM-DDTHH
+        chartMap.set(key, toNum(row.count));
+      } else {
+        const d = startOfDayUTC(new Date(row.bucket));
+        const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+        chartMap.set(key, toNum(row.count));
+      }
     }
-    const series: Array<{ date: string; count: number }> = [];
-    for (let i = daysForChart - 1; i >= 0; i--) {
-      const d = daysAgoUtc(i);
-      const key = d.toISOString().slice(0, 10);
-      series.push({ date: key, count: dailyMap.get(key) ?? 0 });
+
+    const points = [];
+    if (chartMode === "hour") {
+      const end = startOfHourUTC(new Date());
+      for (let i = pointsForChart - 1; i >= 0; i--) {
+        const d = new Date(end);
+        d.setUTCHours(d.getUTCHours() - i);
+        const key = d.toISOString().slice(0, 13);
+        const hour = d.toISOString().slice(11, 16);
+        points.push({
+          xLabel: hour,
+          tooltipLabel: d.toISOString().replace("T", " ").slice(0, 16) + "Z",
+          count: chartMap.get(key) ?? 0,
+        });
+      }
+    } else {
+      for (let i = pointsForChart - 1; i >= 0; i--) {
+        const d = daysAgoUtc(i);
+        const key = d.toISOString().slice(0, 10);
+        points.push({
+          xLabel: key,
+          tooltipLabel: key,
+          count: chartMap.get(key) ?? 0,
+        });
+      }
     }
-    const maxCount = Math.max(1, ...series.map((s) => s.count));
 
     const rangeLabel =
-      range === "all"
-        ? "All-time"
+      range === "24h"
+        ? "Last 24 hours"
         : range === "7d"
           ? "Last 7 days"
-          : range === "90d"
-            ? "Last 90 days"
-            : "Last 30 days";
+          : "Last 30 days";
 
     return (
       <section className="grid gap-6">
@@ -408,255 +462,232 @@ export async function LinkAnalyticsPanel({
           </div>
 
           <div className="mt-6 grid gap-6">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-              <p className="text-sm font-semibold text-slate-100">
-                Daily clicks
-              </p>
-              <p className="mt-1 text-xs text-slate-400">
-                Last {daysForChart} days (UTC)
-              </p>
-
-              <div className="mt-4 flex h-20 items-end gap-1">
-                {series.map((s) => {
-                  const h = Math.max(2, Math.round((s.count / maxCount) * 80));
-                  return (
-                    <div key={s.date} className="group relative flex-1">
-                      <div
-                        className="w-full rounded bg-sky-500/40 group-hover:bg-sky-400/70"
-                        style={{ height: `${h}px` }}
-                        title={`${s.date}: ${s.count}`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
-                <span>{series[0]?.date}</span>
-                <span>{series.at(-1)?.date}</span>
-              </div>
-            </div>
+            <ClicksLineChartClient
+              title="Clicks"
+              subtitle={
+                chartMode === "hour"
+                  ? "Last 24 hours (UTC)"
+                  : `Last ${pointsForChart} days (UTC)`
+              }
+              points={points}
+            />
           </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <div className="grid gap-6">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-                <p className="text-sm font-semibold text-slate-100">
-                  Countries
-                </p>
-                <p className="mt-1 text-xs text-slate-400">Top locations</p>
+          <div className="mt-6 grid gap-6">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
+              <p className="text-sm font-semibold text-slate-100">Countries</p>
+              <p className="mt-1 text-xs text-slate-400">Top locations</p>
 
-                {topCountries.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-400">No data yet.</p>
-                ) : (
-                  <div className="mt-4 grid gap-2">
-                    {topCountries.slice(0, 6).map((c, idx) => {
-                      const cc = normalizeCountryCodeForFlag(c.country);
-                      const name = countryNameFromCode(c.country);
-                      return (
-                        <div
-                          key={`${c.country ?? "unknown"}-${idx}`}
-                          className="flex items-center justify-between gap-3"
-                        >
-                          <span className="flex min-w-0 items-center gap-2">
-                            {cc ? (
-                              <FlagIcon
-                                code={cc}
-                                className="h-4 w-6 object-cover"
-                              />
-                            ) : null}
-                            <span className="min-w-0 truncate text-sm text-slate-200">
-                              {name}
-                            </span>
-                            {cc ? (
-                              <span className="shrink-0 font-mono text-xs text-slate-500">
-                                {cc}
-                              </span>
-                            ) : null}
-                          </span>
-                          <span className="shrink-0 font-mono text-xs text-slate-400 tabular-nums">
-                            {nfmt(c.count)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-                <p className="text-sm font-semibold text-slate-100">
-                  Top sources
-                </p>
-                <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
-                  <span>Referrer host</span>
-                  <span className="group/info relative inline-flex">
-                    <button
-                      type="button"
-                      aria-label="About referrer attribution"
-                      className="inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-slate-700/80 bg-slate-900/40 text-slate-300 transition hover:bg-slate-900 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-                    >
-                      <InfoIcon className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="pointer-events-none absolute top-0 left-1/2 z-10 w-[260px] -translate-x-1/2 -translate-y-[calc(100%+10px)] rounded bg-slate-950 px-2.5 py-2 text-[11px] leading-snug text-slate-100 opacity-0 shadow-lg ring-1 ring-slate-800 transition-opacity group-focus-within/info:opacity-100 group-hover/info:opacity-100">
-                      Best-effort attribution: some apps/browsers omit or mangle{" "}
-                      <span className="font-mono">Referer</span>. We parse the
-                      referrer URL and group by its host when available.
-                    </span>
-                  </span>
-                </div>
-
-                {topReferrers.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-400">No data yet.</p>
-                ) : (
-                  <div className="mt-4 grid gap-2">
-                    {topReferrers.map((r) => (
+              {topCountries.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">No data yet.</p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {topCountries.slice(0, 6).map((c, idx) => {
+                    const cc = normalizeCountryCodeForFlag(c.country);
+                    const name = countryNameFromCode(c.country);
+                    return (
                       <div
-                        key={r.host}
+                        key={`${c.country ?? "unknown"}-${idx}`}
                         className="flex items-center justify-between gap-3"
                       >
-                        <span className="truncate text-sm text-slate-200">
-                          {r.host}
+                        <span className="flex min-w-0 items-center gap-2">
+                          {cc ? (
+                            <FlagIcon
+                              code={cc}
+                              className="h-4 w-6 object-cover"
+                            />
+                          ) : null}
+                          <span className="min-w-0 truncate text-sm text-slate-200">
+                            {name}
+                          </span>
+                          {cc ? (
+                            <span className="shrink-0 font-mono text-xs text-slate-500">
+                              {cc}
+                            </span>
+                          ) : null}
                         </span>
                         <span className="shrink-0 font-mono text-xs text-slate-400 tabular-nums">
-                          {nfmt(r.count)}
+                          {nfmt(c.count)}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            <div className="grid gap-6">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-                <div className="flex items-baseline justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-100">
-                      Devices
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400">Device type</p>
-                  </div>
-                  <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
-                    <span>SHARE</span>
-                    <span>CLICKS</span>
-                  </div>
-                </div>
-
-                {topDeviceTypes.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-400">No data yet.</p>
-                ) : (
-                  <div className="mt-4 grid gap-2">
-                    {topDeviceTypes.map((d, idx) => {
-                      const label = prettyDeviceType(d.deviceType);
-                      const c = toNum(d.count);
-                      const pct = total > 0 ? c / total : NaN;
-                      return (
-                        <div
-                          key={`${label}-${idx}`}
-                          className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
-                        >
-                          <span className="min-w-0 truncate text-sm text-slate-200">
-                            {label}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
-                            {formatPct(pct)}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
-                            {nfmt(c)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
+              <p className="text-sm font-semibold text-slate-100">
+                Top sources
+              </p>
+              <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                <span>Referrer host</span>
+                <span className="group/info relative inline-flex">
+                  <Button
+                    type="button"
+                    aria-label="About referrer attribution"
+                    variant="ghost"
+                    size="icon2xs"
+                    className="rounded"
+                  >
+                    <InfoIcon className="h-3.5 w-3.5" />
+                  </Button>
+                  <span className="pointer-events-none absolute top-0 left-1/2 z-10 w-[260px] -translate-x-1/2 -translate-y-[calc(100%+10px)] rounded bg-slate-950 px-2.5 py-2 text-[11px] leading-snug text-slate-100 opacity-0 shadow-lg ring-1 ring-slate-800 transition-opacity group-focus-within/info:opacity-100 group-hover/info:opacity-100">
+                    Best-effort attribution: some apps/browsers omit or mangle{" "}
+                    <span className="font-mono">Referer</span>. We parse the
+                    referrer URL and group by its host when available.
+                  </span>
+                </span>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-                <div className="flex items-baseline justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-100">
-                      Operating Systems
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400">OS</p>
-                  </div>
-                  <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
-                    <span>SHARE</span>
-                    <span>CLICKS</span>
-                  </div>
+              {topReferrers.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">No data yet.</p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {topReferrers.map((r) => (
+                    <div
+                      key={r.host}
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span className="truncate text-sm text-slate-200">
+                        {r.host}
+                      </span>
+                      <span className="shrink-0 font-mono text-xs text-slate-400 tabular-nums">
+                        {nfmt(r.count)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
+              )}
+            </div>
 
-                {topOs.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-400">No data yet.</p>
-                ) : (
-                  <div className="mt-4 grid gap-2">
-                    {topOs.map((o, idx) => {
-                      const label = prettyOs(o.os);
-                      const c = toNum(o.count);
-                      const pct = total > 0 ? c / total : NaN;
-                      return (
-                        <div
-                          key={`${label}-${idx}`}
-                          className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
-                        >
-                          <span className="min-w-0 truncate text-sm text-slate-200">
-                            {label}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
-                            {formatPct(pct)}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
-                            {nfmt(c)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-100">
+                    Devices
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">Device type</p>
+                </div>
+                <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
+                  <span>SHARE</span>
+                  <span>CLICKS</span>
+                </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
-                <div className="flex items-baseline justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-100">
-                      Browsers
-                    </p>
-                    <p className="mt-1 text-xs text-slate-400">Browser</p>
-                  </div>
-                  <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
-                    <span>SHARE</span>
-                    <span>CLICKS</span>
-                  </div>
+              {topDeviceTypes.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">No data yet.</p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {topDeviceTypes.map((d, idx) => {
+                    const label = prettyDeviceType(d.deviceType);
+                    const c = toNum(d.count);
+                    const pct = total > 0 ? c / total : NaN;
+                    return (
+                      <div
+                        key={`${label}-${idx}`}
+                        className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
+                      >
+                        <span className="min-w-0 truncate text-sm text-slate-200">
+                          {label}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
+                          {formatPct(pct)}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
+                          {nfmt(c)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+            </div>
 
-                {topBrowsers.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-400">No data yet.</p>
-                ) : (
-                  <div className="mt-4 grid gap-2">
-                    {topBrowsers.map((b, idx) => {
-                      const label = prettyBrowser(b.browser);
-                      const c = toNum(b.count);
-                      const pct = total > 0 ? c / total : NaN;
-                      return (
-                        <div
-                          key={`${label}-${idx}`}
-                          className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
-                        >
-                          <span className="min-w-0 truncate text-sm text-slate-200">
-                            {label}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
-                            {formatPct(pct)}
-                          </span>
-                          <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
-                            {nfmt(c)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-100">
+                    Operating Systems
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">OS</p>
+                </div>
+                <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
+                  <span>SHARE</span>
+                  <span>CLICKS</span>
+                </div>
               </div>
+
+              {topOs.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">No data yet.</p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {topOs.map((o, idx) => {
+                    const label = prettyOs(o.os);
+                    const c = toNum(o.count);
+                    const pct = total > 0 ? c / total : NaN;
+                    return (
+                      <div
+                        key={`${label}-${idx}`}
+                        className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
+                      >
+                        <span className="min-w-0 truncate text-sm text-slate-200">
+                          {label}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
+                          {formatPct(pct)}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
+                          {nfmt(c)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-100">
+                    Browsers
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">Browser</p>
+                </div>
+                <div className="grid grid-cols-[48px_64px] gap-3 text-right text-[11px] font-semibold tracking-wide text-slate-500">
+                  <span>SHARE</span>
+                  <span>CLICKS</span>
+                </div>
+              </div>
+
+              {topBrowsers.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">No data yet.</p>
+              ) : (
+                <div className="mt-4 grid gap-2">
+                  {topBrowsers.map((b, idx) => {
+                    const label = prettyBrowser(b.browser);
+                    const c = toNum(b.count);
+                    const pct = total > 0 ? c / total : NaN;
+                    return (
+                      <div
+                        key={`${label}-${idx}`}
+                        className="grid grid-cols-[minmax(0,1fr)_48px_64px] items-center gap-3"
+                      >
+                        <span className="min-w-0 truncate text-sm text-slate-200">
+                          {label}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-400 tabular-nums">
+                          {formatPct(pct)}
+                        </span>
+                        <span className="text-right font-mono text-xs text-slate-500 tabular-nums">
+                          {nfmt(c)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

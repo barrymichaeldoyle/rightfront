@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
+
+import { Button, ButtonLink } from "@/components/ui/Button";
 
 import "@/styles/globals.css";
 
@@ -63,19 +64,12 @@ export default function GlobalError({
             ) : null}
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => reset()}
-                className="cursor-pointer rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400"
-              >
+              <Button type="button" onClick={() => reset()} variant="primary">
                 Try again
-              </button>
-              <Link
-                href="/"
-                className="rounded-md border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
-              >
+              </Button>
+              <ButtonLink href="/" variant="secondary">
                 Go home
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </main>

@@ -2,6 +2,8 @@
 
 import { useActionState, useMemo, useState } from "react";
 
+import { CopyIcon } from "@/components/icons/CopyIcon";
+import { Button } from "@/components/ui/Button";
 import type { CreateLinkState } from "@/lib/linkStates";
 
 const initialState: CreateLinkState = { ok: false, error: "" };
@@ -86,13 +88,14 @@ export function NewLinkForm({
         ) : null}
 
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <button
+          <Button
             type="submit"
             disabled={isPending}
-            className="rounded-md bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-sky-400 hover:to-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
+            variant="primary"
+            loading={isPending}
           >
             {isPending ? "Creating…" : "Create permalink"}
-          </button>
+          </Button>
           <p className="text-xs text-slate-400">
             Creates{" "}
             <span className="font-mono">{permalinkHostless ?? "/p/…"}</span>
@@ -116,13 +119,15 @@ export function NewLinkForm({
             >
               {state.permalink}
             </a>
-            <button
+            <Button
               type="button"
               onClick={handleCopy}
-              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-blue-400"
+              variant="secondary"
+              size="md"
             >
+              <CopyIcon className="h-4 w-4" />
               {copied ? "Copied" : "Copy"}
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}

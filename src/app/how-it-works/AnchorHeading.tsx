@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 
 import type { ReactNode } from "react";
 
+import { Button } from "@/components/ui/Button";
+
 type AnchorHeadingProps = {
   id: string;
   as?: "h1" | "h2";
@@ -104,14 +106,16 @@ export function AnchorHeading({
 
         {/* Copy button (icon + tooltip). Does NOT navigate. */}
         <span className="group/copy relative inline-flex">
-          <button
+          <Button
             type="button"
             onClick={handleCopyClick}
             aria-label={tooltipText}
-            className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-slate-700/80 bg-slate-900/40 text-slate-300 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-slate-900 hover:text-slate-100 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+            variant="ghost"
+            size="iconXs"
+            className="rounded opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
           >
             <LinkIcon className="h-4 w-4" />
-          </button>
+          </Button>
 
           <span
             className={`pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[calc(100%+8px)] rounded bg-slate-950 px-2 py-1 text-xs font-medium whitespace-nowrap text-slate-100 shadow-lg ring-1 ring-slate-800 transition-opacity ${

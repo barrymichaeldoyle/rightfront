@@ -4,7 +4,7 @@ import { useMemo, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type RangeKey = "7d" | "30d" | "90d" | "all";
+type RangeKey = "24h" | "7d" | "30d";
 
 function Spinner({ className }: { className?: string }) {
   return (
@@ -34,7 +34,7 @@ export function RangeToggle({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const options: RangeKey[] = useMemo(() => ["7d", "30d", "90d", "all"], []);
+  const options: RangeKey[] = useMemo(() => ["24h", "7d", "30d"], []);
 
   function hrefFor(k: RangeKey): string {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
@@ -79,7 +79,7 @@ export function RangeToggle({
                   : "border-slate-700 bg-slate-950/40 text-slate-200 hover:bg-slate-900/40"
               } ${isPending ? "cursor-wait" : ""}`}
             >
-              {k === "all" ? "All" : k}
+              {k === "24h" ? "24H" : k.toUpperCase()}
             </Link>
           );
         })}

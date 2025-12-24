@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { BrandMark } from "@/components/BrandLogo";
+import { ButtonLink } from "@/components/ui/Button";
 import { config } from "@/lib/config";
 import { features } from "@/lib/features";
 
@@ -20,12 +19,9 @@ export default function HowItWorksPage() {
         <AnchorHeading id="top" as="h1">
           How <BrandMark /> Works
         </AnchorHeading>
-        <Link
-          href="/"
-          className="rounded text-sm text-slate-400 underline-offset-4 hover:text-slate-100 hover:underline focus-visible:ring-2 focus-visible:ring-blue-400"
-        >
+        <ButtonLink href="/" variant="secondary" size="sm">
           ← Back to Home
-        </Link>
+        </ButtonLink>
       </header>
 
       <section className="mb-12">

@@ -1,0 +1,20 @@
+RightFront — LLM context
+
+Site: https://rightfront.app
+
+RightFront provides smart App Store link redirection for developers and marketing teams.
+It detects a visitor’s country and redirects them to the correct localized storefront URL when available.
+If the app isn’t available in that storefront, it shows a friendly fallback page instead of the default “Not Available” experience.
+
+This file is intended to help LLM-based tools understand this site; it is not a traditional SEO ranking mechanism.
+
+Public pages
+- /how-it-works
+- /fallback
+
+Redirect endpoint (noindex)
+- /link
+
+Endpoint usage (query params)
+- /link?id=<appId>&store=ios
+- /fallback?id=<appId>&country=<2-letter-code>
