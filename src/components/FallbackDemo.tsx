@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { BrandMark } from "@/components/BrandLogo";
 import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
 import { ButtonLink } from "@/components/ui/Button";
+import { config } from "@/lib/config";
 
 const storefrontOptions = [
   { value: "us", label: "United States (US)" },
@@ -31,12 +32,17 @@ const fallbackExamples = [
       "Often yields useful alternatives when a storefront doesn’t carry it.",
     scopeAll: false,
   },
-  {
-    name: "VALR Crypto Exchange & Wallet",
-    id: "id1453499428",
-    blurb: "Good mismatch case: available in many storefronts but not US.",
-    scopeAll: true,
-  },
+  ...(config.env === "development"
+    ? [
+        {
+          name: "VALR Crypto Exchange & Wallet",
+          id: "id1453499428",
+          blurb:
+            "Good mismatch case: available in many storefronts but not US.",
+          scopeAll: true,
+        },
+      ]
+    : []),
 ] as const;
 
 function buildFallbackHref({
