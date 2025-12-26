@@ -57,12 +57,20 @@ export default async function HomePage() {
 
             <div className="flex items-center gap-2">
               <SignedOut>
-                <SignInButton>
+                <SignInButton
+                  mode="modal"
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
+                >
                   <Button type="button" variant="secondary" size="sm">
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton>
+                <SignUpButton
+                  mode="modal"
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
+                >
                   <Button type="button" variant="primary" size="sm">
                     Sign up
                   </Button>
@@ -140,7 +148,11 @@ export default async function HomePage() {
                 </p>
               </div>
               <div className="flex w-full max-w-xl flex-1 flex-col gap-2 sm:flex-row">
-                <SignUpButton>
+                <SignUpButton
+                  mode="modal"
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
+                >
                   <Button
                     type="button"
                     variant="primary"
@@ -150,7 +162,11 @@ export default async function HomePage() {
                     Sign up to generate permalinks
                   </Button>
                 </SignUpButton>
-                <SignInButton>
+                <SignInButton
+                  mode="modal"
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
+                >
                   <Button
                     type="button"
                     variant="secondary"
