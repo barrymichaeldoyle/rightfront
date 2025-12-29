@@ -22,14 +22,13 @@ const fallbackExamples = [
   {
     name: "BBC iPlayer",
     id: "id416580485",
-    blurb: "Strong territory restriction (great for region mismatch demos).",
+    blurb: "Only available in the UK (GB).",
     scopeAll: false,
   },
   {
     name: "NHS App",
     id: "id1388411277",
-    blurb:
-      "Often yields useful alternatives when a storefront doesn’t carry it.",
+    blurb: "Available in the UK (GB), US and AU.",
     scopeAll: false,
   },
   ...(config.env === "development"
@@ -37,8 +36,7 @@ const fallbackExamples = [
         {
           name: "VALR Crypto Exchange & Wallet",
           id: "id1453499428",
-          blurb:
-            "Good mismatch case: available in many storefronts but not US.",
+          blurb: "Available in many storefronts, but not US.",
           scopeAll: true,
         },
       ]
@@ -111,7 +109,7 @@ export function FallbackDemo() {
         </div>
 
         {/* Cards */}
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {exampleLinks.map((ex) => (
             <div
               key={ex.id}

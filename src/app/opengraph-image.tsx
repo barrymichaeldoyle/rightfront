@@ -21,8 +21,29 @@ export default function OpenGraphImage() {
         color: "#e2e8f0",
       }}
     >
-      <div style={{ fontSize: 64, fontWeight: 800, letterSpacing: -1 }}>
-        RightFront
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          fontSize: 64,
+          fontWeight: 600,
+          letterSpacing: "-0.025em",
+        }}
+      >
+        <span style={{ color: "#38bdf8" }}>Right</span>
+        <span
+          style={{
+            marginLeft: "4px",
+            marginRight: "4px",
+            color: "#e2e8f0",
+            fontWeight: 700,
+            position: "relative",
+            top: "-2px",
+          }}
+        >
+          |
+        </span>
+        <span style={{ color: "#2563eb" }}>Front</span>
       </div>
       <div style={{ marginTop: 16, fontSize: 36, fontWeight: 600 }}>
         {androidEnabled
