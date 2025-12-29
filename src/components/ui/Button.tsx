@@ -1,16 +1,10 @@
 import Link from "next/link";
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
 
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger"
-  | "link";
+export type ButtonVariant = "primary" | "secondary" | "danger" | "link";
 
 export type ButtonSize =
   | "xs"
@@ -55,8 +49,6 @@ export function buttonClasses({
   const variants: Record<ButtonVariant, string> = {
     primary: `bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sm shadow-blue-500/10 ${hover}:from-sky-400 ${hover}:to-blue-500`,
     secondary: `border border-slate-700 bg-slate-900 text-slate-200 ${hover}:bg-slate-800`,
-    outline: `border border-slate-700 bg-transparent text-slate-200 ${hover}:border-blue-500/60 ${hover}:bg-blue-500/10`,
-    ghost: `border border-slate-700/80 bg-slate-900/40 text-slate-300 ${hover}:bg-slate-900 ${hover}:text-slate-100`,
     danger: `border border-red-300/30 bg-red-950 text-red-100 ${hover}:brightness-120 focus-visible:ring-red-300`,
     link: "h-auto px-0 py-0 text-sm text-sky-300 underline-offset-4 hover:text-sky-200 hover:underline",
   };
@@ -76,16 +68,37 @@ function Spinner({ className }: { className?: string }) {
   );
 }
 
-export type ButtonProps = Omit<
-  ComponentProps<"button">,
-  "disabled" | "className"
-> &
-  ButtonStyleOptions & {
-    className?: string;
-    disabled?: boolean;
-    loading?: boolean;
-    withSpinner?: boolean;
+type BaseButtonProps = ButtonStyleOptions & {
+  className?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  withSpinner?: boolean;
+} & PropsWithChildren;
+
+type ButtonAsButton = BaseButtonProps &
+  Omit<ComponentProps<"button">, "disabled" | "className" | "type"> & {
+    href?: never;
+    type?: "button" | "submit" | "reset";
   };
+
+type ButtonAsLink = BaseButtonProps &
+  Omit<ComponentProps<typeof Link>, "className"> & {
+    href: string;
+    type?: never;
+  };
+
+type ButtonAsAnchor = BaseButtonProps &
+  Omit<ComponentProps<"a">, "className" | "href"> & {
+    href: string;
+    type?: never;
+  };
+
+export type ButtonProps = ButtonAsButton | ButtonAsLink | ButtonAsAnchor;
+
+function isInternalLink(href: string): boolean {
+  // Internal links start with / or #, or are relative paths
+  return href.startsWith("/") || href.startsWith("#") || !href.includes("://");
+}
 
 export function Button({
   variant = "secondary",
@@ -96,19 +109,74 @@ export function Button({
   withSpinner,
   className,
   children,
+  href,
   type = "button",
   ...props
 }: ButtonProps) {
   const isDisabled = Boolean(disabled || loading);
   const showSpinner = Boolean(loading || withSpinner);
+  const buttonClassName = cn(
+    buttonClasses({
+      variant,
+      size,
+      fullWidth,
+      interactive: href ? "link" : "button",
+    }),
+    className,
+  );
 
+  // Render as Next.js Link for internal links
+  if (href && isInternalLink(href)) {
+    const { href: _, ...linkProps } = props as ComponentProps<typeof Link> & {
+      href?: string;
+    };
+    return (
+      <Link
+        href={href}
+        className={buttonClassName}
+        aria-busy={loading || linkProps["aria-busy"]}
+        {...linkProps}
+      >
+        {showSpinner ? (
+          <Spinner
+            className={cn("shrink-0", loading ? "animate-spin" : "opacity-0")}
+          />
+        ) : null}
+        {children}
+      </Link>
+    );
+  }
+
+  // Render as anchor for external links
+  if (href) {
+    const { href: _, ...anchorProps } = props as ComponentProps<"a"> & {
+      href?: string;
+    };
+    return (
+      <a
+        href={href}
+        className={buttonClassName}
+        aria-busy={loading || anchorProps["aria-busy"]}
+        {...anchorProps}
+      >
+        {showSpinner ? (
+          <Spinner
+            className={cn("shrink-0", loading ? "animate-spin" : "opacity-0")}
+          />
+        ) : null}
+        {children}
+      </a>
+    );
+  }
+
+  // Render as button by default
   return (
     <button
       type={type}
       disabled={isDisabled}
       aria-busy={loading || props["aria-busy"]}
-      className={cn(buttonClasses({ variant, size, fullWidth }), className)}
-      {...props}
+      className={buttonClassName}
+      {...(props as ComponentProps<"button">)}
     >
       {showSpinner ? (
         <Spinner
@@ -117,51 +185,5 @@ export function Button({
       ) : null}
       {children}
     </button>
-  );
-}
-
-export type ButtonLinkProps = Omit<ComponentProps<typeof Link>, "className"> &
-  ButtonStyleOptions & {
-    className?: string;
-  };
-
-export function ButtonLink({
-  variant = "secondary",
-  size = "md",
-  fullWidth = false,
-  className,
-  ...props
-}: ButtonLinkProps) {
-  return (
-    <Link
-      className={cn(
-        buttonClasses({ variant, size, fullWidth, interactive: "link" }),
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export type ButtonAnchorProps = Omit<ComponentProps<"a">, "className"> &
-  ButtonStyleOptions & {
-    className?: string;
-  };
-
-export function ButtonAnchor({
-  variant = "secondary",
-  size = "md",
-  fullWidth = false,
-  className,
-  ...props
-}: ButtonAnchorProps) {
-  return (
-    <a
-      className={cn(
-        buttonClasses({ variant, size, fullWidth, interactive: "link" }),
-        className,
-      )}
-      {...props}
-    />
   );
 }

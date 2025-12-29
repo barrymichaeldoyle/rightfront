@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/BrandLogo";
 import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { config } from "@/lib/config";
 
 const storefrontOptions = [
@@ -127,7 +127,7 @@ export function FallbackDemo() {
                 </p>
               </div>
 
-              <ButtonLink
+              <Button
                 href={ex.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -137,7 +137,7 @@ export function FallbackDemo() {
               >
                 <span>Open fallback demo</span>
                 <ExternalLinkIcon className="h-4 w-4" />
-              </ButtonLink>
+              </Button>
             </div>
           ))}
         </div>

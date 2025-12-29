@@ -1,9 +1,13 @@
 import type { Preview } from "@storybook/nextjs-vite";
 import React from "react";
+import theme from "./RightFrontTheme";
 import "../src/styles/globals.css";
 
 const preview: Preview = {
   parameters: {
+    docs: {
+      theme,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

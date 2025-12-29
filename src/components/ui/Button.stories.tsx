@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { Button, ButtonLink, ButtonAnchor } from "./Button";
+import { Button } from "./Button";
 import type { ButtonVariant, ButtonSize } from "./Button";
 
 const meta = {
@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["primary", "secondary", "outline", "ghost", "danger", "link"],
+      options: ["primary", "secondary", "danger", "link"],
       description: "The visual style variant of the button",
     },
     size: {
@@ -68,20 +68,6 @@ export const Secondary: Story = {
   args: {
     children: "Secondary Button",
     variant: "secondary",
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    children: "Outline Button",
-    variant: "outline",
-  },
-};
-
-export const Ghost: Story = {
-  args: {
-    children: "Ghost Button",
-    variant: "ghost",
   },
 };
 
@@ -172,13 +158,6 @@ export const Loading: Story = {
   },
 };
 
-export const WithSpinner: Story = {
-  args: {
-    children: "Button with Spinner",
-    withSpinner: true,
-  },
-};
-
 export const FullWidth: Story = {
   args: {
     children: "Full Width Button",
@@ -195,8 +174,6 @@ export const AllVariants: Story = {
     const variants: ButtonVariant[] = [
       "primary",
       "secondary",
-      "outline",
-      "ghost",
       "danger",
       "link",
     ];
@@ -229,30 +206,6 @@ export const AllSizes: Story = {
       </div>
     );
   },
-  parameters: {
-    layout: "padded",
-  },
-};
-
-// ButtonLink component
-export const ButtonLinkStory: Story = {
-  render: () => (
-    <ButtonLink href="#" variant="primary">
-      Link Button
-    </ButtonLink>
-  ),
-  parameters: {
-    layout: "padded",
-  },
-};
-
-// ButtonAnchor component
-export const ButtonAnchorStory: Story = {
-  render: () => (
-    <ButtonAnchor href="#" variant="outline">
-      Anchor Button
-    </ButtonAnchor>
-  ),
   parameters: {
     layout: "padded",
   },
