@@ -77,7 +77,6 @@ export function LinkSettingsForm({
               type="button"
               onClick={copyPermalink}
               aria-label="Copy permalink"
-              variant="ghost"
               size="iconSm"
               className="bg-slate-950/40 text-slate-200 hover:bg-slate-900/40 hover:text-slate-50"
             >

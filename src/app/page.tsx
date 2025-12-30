@@ -13,6 +13,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { FallbackDemo } from "@/components/FallbackDemo";
 import { HomeForm } from "@/components/HomeForm";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { features } from "@/lib/features";
 
 export const metadata: Metadata = {
@@ -25,8 +26,8 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const androidEnabled = features.androidEnabled;
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
-      <header className="relative z-10 border-b border-slate-800/80 bg-slate-950/80 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
+    <main className="relative isolate flex min-h-screen flex-col bg-slate-950 text-slate-100">
+      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/95 px-6 py-4 shadow-md shadow-slate-900/40 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between">
           {/* Logo */}
           <BrandLogo href="/" />
@@ -125,7 +126,7 @@ export default async function HomePage() {
         <HomeForm />
 
         <SignedOut>
-          <div className="my-10 w-full max-w-2xl rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 text-left shadow-xl shadow-slate-900/40 backdrop-blur-sm">
+          <Card className="my-10 w-full max-w-2xl text-left">
             <div className="flex flex-col items-center justify-between gap-4">
               <div className="w-full max-w-xl">
                 <p className="text-sm font-semibold text-slate-100">
@@ -178,41 +179,11 @@ export default async function HomePage() {
                 </SignInButton>
               </div>
             </div>
-          </div>
+          </Card>
         </SignedOut>
       </section>
 
       <FallbackDemo />
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/80 bg-slate-950/80 py-6 text-center text-sm text-slate-400 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
-        <p className="leading-relaxed">
-          <span className="opacity-80">© {new Date().getFullYear()} </span>
-          <span className="font-semibold tracking-tight">
-            <span className="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
-              Right
-            </span>
-            <span className="relative -top-0.25 mx-0.5 font-bold text-slate-100">
-              |
-            </span>
-            <span className="bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
-              Front
-            </span>
-          </span>
-          <span className="opacity-80">
-            {" "}
-            — geo-aware store links that land right, every time.
-          </span>
-        </p>
-        <p className="mt-2 text-xs text-slate-500">
-          <Link
-            href="/privacy"
-            className="underline underline-offset-4 hover:text-slate-200"
-          >
-            Privacy Policy
-          </Link>
-        </p>
-      </footer>
     </main>
   );
 }

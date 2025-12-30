@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 function BrandMark() {
   return (
@@ -64,9 +64,9 @@ export default function ErrorBoundary({
           <Button type="button" onClick={() => reset()} variant="primary">
             Try again
           </Button>
-          <ButtonLink href="/" variant="secondary">
+          <Button href="/" variant="secondary">
             Go home
-          </ButtonLink>
+          </Button>
         </div>
       </div>
     </main>

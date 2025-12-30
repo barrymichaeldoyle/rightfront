@@ -110,7 +110,6 @@ export function AnchorHeading({
             type="button"
             onClick={handleCopyClick}
             aria-label={tooltipText}
-            variant="ghost"
             size="iconXs"
             className="rounded opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
           >

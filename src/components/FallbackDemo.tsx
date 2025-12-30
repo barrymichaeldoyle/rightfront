@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/BrandLogo";
 import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { config } from "@/lib/config";
 
 const storefrontOptions = [
   { value: "us", label: "United States (US)" },
@@ -21,22 +23,25 @@ const fallbackExamples = [
   {
     name: "BBC iPlayer",
     id: "id416580485",
-    blurb: "Strong territory restriction (great for region mismatch demos).",
+    blurb: "Only available in the UK (GB).",
     scopeAll: false,
   },
   {
     name: "NHS App",
     id: "id1388411277",
-    blurb:
-      "Often yields useful alternatives when a storefront doesn’t carry it.",
+    blurb: "Available in the UK (GB), US and AU.",
     scopeAll: false,
   },
-  {
-    name: "VALR Crypto Exchange & Wallet",
-    id: "id1453499428",
-    blurb: "Good mismatch case: available in many storefronts but not US.",
-    scopeAll: true,
-  },
+  ...(config.env === "development"
+    ? [
+        {
+          name: "VALR Crypto Exchange & Wallet",
+          id: "id1453499428",
+          blurb: "Available in many storefronts, but not US.",
+          scopeAll: true,
+        },
+      ]
+    : []),
 ] as const;
 
 function buildFallbackHref({
@@ -105,12 +110,9 @@ export function FallbackDemo() {
         </div>
 
         {/* Cards */}
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {exampleLinks.map((ex) => (
-            <div
-              key={ex.id}
-              className="group flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 shadow-md shadow-slate-900/40 backdrop-blur-sm transition-all"
-            >
+            <Card key={ex.id} className="group flex flex-col justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-slate-100 transition-colors group-hover:text-white">
                   {ex.name}
@@ -123,7 +125,7 @@ export function FallbackDemo() {
                 </p>
               </div>
 
-              <ButtonLink
+              <Button
                 href={ex.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -133,8 +135,8 @@ export function FallbackDemo() {
               >
                 <span>Open fallback demo</span>
                 <ExternalLinkIcon className="h-4 w-4" />
-              </ButtonLink>
-            </div>
+              </Button>
+            </Card>
           ))}
         </div>
       </div>

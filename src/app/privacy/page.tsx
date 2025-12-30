@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import type { Metadata } from "next";
 
+import { Button } from "@/components/ui/Button";
+
 export const metadata: Metadata = {
   title: "Privacy Policy — RightFront",
   description:
@@ -13,13 +15,18 @@ export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12 text-slate-100">
       {/* Header */}
-      <header className="border-b border-slate-800/70 pb-6">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-50">
-          Privacy Policy
-        </h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Last updated: <time dateTime="2025-12-24">December 24, 2025</time>
-        </p>
+      <header className="mb-10 flex items-center justify-between border-b border-slate-800 pb-6">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-50">
+            Privacy Policy
+          </h1>
+          <p className="mt-2 text-sm text-slate-400">
+            Last updated: <time dateTime="2025-12-24">December 24, 2025</time>
+          </p>
+        </div>
+        <Button href="/" variant="secondary" size="sm">
+          ← Back to Home
+        </Button>
       </header>
 
       {/* Body */}

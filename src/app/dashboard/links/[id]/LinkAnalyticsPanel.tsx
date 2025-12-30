@@ -526,7 +526,6 @@ export async function LinkAnalyticsPanel({
                   <Button
                     type="button"
                     aria-label="About referrer attribution"
-                    variant="ghost"
                     size="icon2xs"
                     className="rounded"
                   >

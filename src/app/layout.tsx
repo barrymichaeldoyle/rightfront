@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 
+import { Footer } from "@/components/Footer";
 import { features } from "@/lib/features";
 
 import "@/styles/globals.css";
@@ -141,6 +142,7 @@ export default function RootLayout({
           <Analytics />
           <SpeedInsights />
           {children}
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

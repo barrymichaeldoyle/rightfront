@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CopyIcon } from "@/components/icons/CopyIcon";
 import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
 import { SettingsIcon } from "@/components/icons/SettingsIcon";
-import { Button, ButtonAnchor, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 type LinkRow = {
   id: string;
@@ -54,7 +54,7 @@ export function DashboardLinksClient({
             className="flex items-center justify-between gap-4 px-4 py-3 transition hover:bg-slate-900/40"
           >
             <div className="min-w-0">
-              <ButtonAnchor
+              <Button
                 href={permalink}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -65,7 +65,7 @@ export function DashboardLinksClient({
               >
                 <ExternalLinkIcon className="h-4 w-4 shrink-0 opacity-90" />
                 <span className="min-w-0 truncate">/p/{link.slug}</span>
-              </ButtonAnchor>
+              </Button>
               <p className="mt-0.5 text-xs text-slate-400">
                 <span className="font-mono text-slate-300">{link.appId}</span> •{" "}
                 {link.platform.toUpperCase()} • {link.clicks} clicks • Created{" "}
@@ -84,7 +84,7 @@ export function DashboardLinksClient({
                 {copiedSlug === link.slug ? "Copied" : "Copy"}
               </Button>
 
-              <ButtonLink
+              <Button
                 href={manageHref}
                 prefetch
                 variant="secondary"
@@ -118,7 +118,7 @@ export function DashboardLinksClient({
                     isNavigatingThis ? "animate-spin opacity-100" : "opacity-0"
                   }`}
                 />
-              </ButtonLink>
+              </Button>
             </div>
           </div>
         );
